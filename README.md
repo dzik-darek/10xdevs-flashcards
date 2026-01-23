@@ -1,94 +1,140 @@
-# 10x Astro Starter
+# 10xdevs Flashcards
 
-A modern, opinionated starter template for building fast, accessible, and AI-friendly web applications.
+![Project Status](https://img.shields.io/badge/status-development-orange)
+![Astro](https://img.shields.io/badge/astro-5.0-ff5d01)
+![React](https://img.shields.io/badge/react-19.0-61dafb)
+![TypeScript](https://img.shields.io/badge/typescript-5.0-3178c6)
+![License](https://img.shields.io/badge/license-MIT-blue)
+
+**10xdevs Flashcards** is a web-based learning application designed to maximize study efficiency through **Spaced Repetition (FSRS)** and **Generative AI**.
+
+Instead of spending hours manually creating flashcards, users can simply paste their notes, and the integrated AI (powered by OpenAI via OpenRouter) automatically extracts key concepts and generates questions and answers. The application focuses on a desktop-first experience to streamline the workflow between studying materials and reviewing knowledge.
+
+## Table of Contents
+
+- [Features](#features)
+- [Tech Stack](#tech-stack)
+- [Getting Started Locally](#getting-started-locally)
+  - [Prerequisites](#prerequisites)
+  - [Installation](#installation)
+  - [Environment Variables](#environment-variables)
+- [Available Scripts](#available-scripts)
+- [Project Scope](#project-scope)
+- [Project Status](#project-status)
+- [License](#license)
+
+## Features
+
+- **AI-Powered Generation**: Paste text notes to automatically generate high-quality flashcards using GPT-4o-mini.
+- **Spaced Repetition System**: Implements the FSRS (Free Spaced Repetition Scheduler) algorithm to optimize review intervals.
+- **Smart Draft Mode**: Review, edit, or reject AI-generated cards before adding them to your permanent collection.
+- **Flashcard Management**: Create, read, update, and delete flashcards with a search function.
+- **Study Dashboard**: View daily review counts and progress.
+- **Clean UI**: Built with Shadcn/ui and Tailwind CSS 4 for a modern, accessible interface.
 
 ## Tech Stack
 
-- [Astro](https://astro.build/) v5.5.5 - Modern web framework for building fast, content-focused websites
-- [React](https://react.dev/) v19.0.0 - UI library for building interactive components
-- [TypeScript](https://www.typescriptlang.org/) v5 - Type-safe JavaScript
-- [Tailwind CSS](https://tailwindcss.com/) v4.0.17 - Utility-first CSS framework
+### Frontend
+- **Framework**: [Astro 5](https://astro.build/)
+- **UI Library**: [React 19](https://react.dev/)
+- **Language**: [TypeScript 5](https://www.typescriptlang.org/)
+- **Styling**: [Tailwind CSS 4](https://tailwindcss.com/)
+- **Components**: [Shadcn/ui](https://ui.shadcn.com/) (Radix UI + Lucide React)
 
-## Prerequisites
+### Backend & Services
+- **Backend-as-a-Service**: [Supabase](https://supabase.com/) (Auth, PostgreSQL Database)
+- **AI Provider**: [OpenRouter](https://openrouter.ai/) (Accessing OpenAI models)
+- **Hosting**: Docker / DigitalOcean
 
-- Node.js v22.14.0 (as specified in `.nvmrc`)
-- npm (comes with Node.js)
+## Getting Started Locally
 
-## Getting Started
+Follow these instructions to get a copy of the project up and running on your local machine.
 
-1. Clone the repository:
+### Prerequisites
+
+- **Node.js**: Version `22.14.0` or higher (Managed via `.nvmrc`).
+- **npm** or **yarn**.
+
+### Installation
+
+1.  **Clone the repository**
+    ```bash
+    git clone https://github.com/your-username/10xdevs-flashcards.git
+    cd 10xdevs-flashcards
+    ```
+
+2.  **Set up Node version**
+    If you use `nvm`, simply run:
+    ```bash
+    nvm use
+    ```
+
+3.  **Install dependencies**
+    ```bash
+    npm install
+    ```
+
+### Environment Variables
+
+Create a `.env` file in the root directory to configure your local environment. You will need credentials for Supabase and OpenRouter.
 
 ```bash
-git clone https://github.com/przeprogramowani/10x-astro-starter.git
-cd 10x-astro-starter
+# Example .env structure
+PUBLIC_SUPABASE_URL=your_supabase_url
+PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+OPENROUTER_API_KEY=your_openrouter_api_key
 ```
 
-2. Install dependencies:
+### Running Development Server
 
-```bash
-npm install
-```
-
-3. Run the development server:
+Start the Astro development server:
 
 ```bash
 npm run dev
 ```
 
-4. Build for production:
-
-```bash
-npm run build
-```
+The application will be available at `http://localhost:4321`.
 
 ## Available Scripts
 
-- `npm run dev` - Start development server
-- `npm run build` - Build for production
-- `npm run preview` - Preview production build
-- `npm run lint` - Run ESLint
-- `npm run lint:fix` - Fix ESLint issues
+In the project directory, you can run:
 
-## Project Structure
+| Script | Description |
+| :--- | :--- |
+| `npm run dev` | Starts the local development server with hot reloading. |
+| `npm run build` | Builds the production application to the `./dist/` folder. |
+| `npm run preview` | Previews the production build locally. |
+| `npm run lint` | Runs ESLint to identify code quality issues. |
+| `npm run lint:fix` | Runs ESLint and automatically fixes fixable issues. |
+| `npm run format` | Formats code using Prettier. |
 
-```md
-.
-├── src/
-│   ├── layouts/    # Astro layouts
-│   ├── pages/      # Astro pages
-│   │   └── api/    # API endpoints
-│   ├── components/ # UI components (Astro & React)
-│   └── assets/     # Static assets
-├── public/         # Public assets
-```
+## Project Scope
 
-## AI Development Support
+This project is an **MVP (Minimum Viable Product)**.
 
-This project is configured with AI development tools to enhance the development experience, providing guidelines for:
+### ✅ In Scope
+- Web Application (Astro + React)
+- Authentication (Email/Password via Supabase)
+- AI Flashcard Generator (Text-to-Cards)
+- Manual CRUD for Flashcards
+- FSRS Spaced Repetition Algorithm
+- Error handling and validation (Zod)
 
-- Project structure
-- Coding practices
-- Frontend development
-- Styling with Tailwind
-- Accessibility best practices
-- Astro and React guidelines
+### ❌ Out of Scope (For Now)
+- Mobile Apps (iOS/Android)
+- Social Login (Google, GitHub, etc.)
+- Password Reset flows
+- File Imports (PDF, Images)
+- Decks/Tags organization
+- Dark Mode (Light Mode only for MVP)
+- Progress Charts/Statistics
 
-### Cursor IDE
+## Project Status
 
-The project includes AI rules in `.cursor/rules/` directory that help Cursor IDE understand the project structure and provide better code suggestions.
+🚧 **Active Development**
 
-### GitHub Copilot
-
-AI instructions for GitHub Copilot are available in `.github/copilot-instructions.md`
-
-### Windsurf
-
-The `.windsurfrules` file contains AI configuration for Windsurf.
-
-## Contributing
-
-Please follow the AI guidelines and coding practices defined in the AI configuration files when contributing to this project.
+This project is currently in the **MVP** phase. Core features are being implemented according to the Product Requirements Document.
 
 ## License
 
-MIT
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
