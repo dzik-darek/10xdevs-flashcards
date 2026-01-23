@@ -80,8 +80,8 @@ Create a `.env` file in the root directory to configure your local environment. 
 
 ```bash
 # Example .env structure
-PUBLIC_SUPABASE_URL=your_supabase_url
-PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+SUPABASE_URL=your_supabase_url
+SUPABASE_KEY=your_supabase_anon_key
 OPENROUTER_API_KEY=your_openrouter_api_key
 ```
 
@@ -93,7 +93,7 @@ Start the Astro development server:
 npm run dev
 ```
 
-The application will be available at `http://localhost:4321`.
+The application will be available at `http://localhost:3000`.
 
 ## Available Scripts
 
@@ -117,7 +117,7 @@ This project is an **MVP (Minimum Viable Product)**.
 - Authentication (Email/Password via Supabase)
 - AI Flashcard Generator (Text-to-Cards)
 - Manual CRUD for Flashcards
-- FSRS Spaced Repetition Algorithm
+- FSRS Spaced Repetition Algorithm (open source library - [ts-fsrs](https://github.com/open-spaced-repetition/ts-fsrs))
 - Error handling and validation (Zod)
 
 ### ❌ Out of Scope (For Now)
