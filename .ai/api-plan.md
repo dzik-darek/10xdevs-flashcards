@@ -140,8 +140,7 @@ Obsługa logiki algorytmu Spaced Repetition (FSRS).
 *   **Odpowiedź Sukcesu (200 OK):**
     ```json
     {
-      "card": { ... }, // Zaktualizowana fiszka (do ewentualnego undo lub odświeżenia UI)
-      "next_due": "2026-01-25T..."
+      "card": { ... } // Zaktualizowana fiszka (do ewentualnego undo lub odświeżenia UI)
     }
     ```
 *   **Błędy:** `400 Bad Request` (nieprawidłowa ocena), `404 Not Found` (fiszka nie istnieje/brak dostępu).

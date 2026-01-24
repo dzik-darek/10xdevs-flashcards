@@ -177,11 +177,6 @@ export interface CreateReviewResponseDTO {
    * Useful for UI refresh or potential undo functionality
    */
   card: FlashcardDTO;
-
-  /**
-   * ISO timestamp of when the card is next due for review
-   */
-  next_due: string;
 }
 
 // ============================================================================
