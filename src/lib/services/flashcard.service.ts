@@ -13,6 +13,7 @@ import type {
   BatchCreateFlashcardsResponseDTO,
   GetFlashcardsQueryDTO,
   GetFlashcardsResponseDTO,
+  UpdateFlashcardDTO,
 } from "../../types";
 
 // ============================================================================
@@ -238,4 +239,69 @@ export async function getFlashcards(
     data: data || [],
     count: count || 0,
   };
+}
+
+/**
+ * Updates an existing flashcard's content (front/back text only)
+ *
+ * Flow:
+ * 1. Validate input data (handled by Zod at endpoint level)
+ * 2. Update flashcard with provided fields (partial update)
+ * 3. Filter by both id and user_id for security (ownership check)
+ * 4. Return updated flashcard with all fields
+ *
+ * @param supabase - Supabase client instance (from context.locals)
+ * @param id - UUID of the flashcard to update
+ * @param userId - ID of the authenticated user (for ownership check)
+ * @param dto - Partial flashcard data (front and/or back)
+ * @returns Updated flashcard with all fields, or null if not found/unauthorized
+ * @throws Error if database update fails
+ */
+export async function updateFlashcard(
+  supabase: SupabaseClientType,
+  id: string,
+  userId: string,
+  dto: UpdateFlashcardDTO
+): Promise<FlashcardDTO | null> {
+  // ========================================================================
+  // Step 1: Prepare Update Data
+  // ========================================================================
+
+  // Only update fields that are provided
+  // updated_at will be automatically set by database trigger
+  const updateData: UpdateFlashcardDTO = {};
+  if (dto.front !== undefined) {
+    updateData.front = dto.front;
+  }
+  if (dto.back !== undefined) {
+    updateData.back = dto.back;
+  }
+
+  // ========================================================================
+  // Step 2: Update Flashcard with Ownership Check
+  // ========================================================================
+
+  // Update only if card exists AND belongs to the user (IDOR protection)
+  const { data: updatedCard, error: updateError } = await supabase
+    .from("flashcards")
+    .update(updateData)
+    .eq("id", id)
+    .eq("user_id", userId)
+    .select()
+    .single();
+
+  // Guard: Check for update errors
+  if (updateError) {
+    // PGRST116 = Row not found (404 case)
+    if (updateError.code === "PGRST116") {
+      return null;
+    }
+    throw new Error(`Failed to update flashcard: ${updateError.message}`);
+  }
+
+  // ========================================================================
+  // Step 3: Return Updated Flashcard
+  // ========================================================================
+
+  return updatedCard;
 }
