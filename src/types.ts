@@ -1,11 +1,11 @@
 /**
  * Shared types for backend and frontend (Entities, DTOs, Command Models)
- * 
+ *
  * This file contains all Data Transfer Objects (DTOs) and Command Models
  * used in the API, derived from the database schema types.
  */
 
-import type { Database } from './db/database.types';
+import type { Database } from "./db/database.types";
 
 // ============================================================================
 // Database Entity Aliases
@@ -15,17 +15,17 @@ import type { Database } from './db/database.types';
  * Flashcard entity - complete representation from database
  * Used in API responses that return full flashcard data
  */
-export type FlashcardDTO = Database['public']['Tables']['flashcards']['Row'];
+export type FlashcardDTO = Database["public"]["Tables"]["flashcards"]["Row"];
 
 /**
  * Profile entity - user profile information
  */
-export type ProfileDTO = Database['public']['Tables']['profiles']['Row'];
+export type ProfileDTO = Database["public"]["Tables"]["profiles"]["Row"];
 
 /**
  * Review Log entity - historical record of a flashcard review
  */
-export type ReviewLogDTO = Database['public']['Tables']['review_logs']['Row'];
+export type ReviewLogDTO = Database["public"]["Tables"]["review_logs"]["Row"];
 
 // ============================================================================
 // FSRS Constants & Utility Types
@@ -48,7 +48,7 @@ export type CardState = 0 | 1 | 2 | 3;
  * - 'all': All user's flashcards
  * - 'study': Only cards due for review (due <= NOW())
  */
-export type FlashcardQueryMode = 'all' | 'study';
+export type FlashcardQueryMode = "all" | "study";
 
 // ============================================================================
 // Flashcards API DTOs
@@ -57,27 +57,24 @@ export type FlashcardQueryMode = 'all' | 'study';
 /**
  * DTO for creating a single flashcard
  * POST /api/flashcards
- * 
+ *
  * Derived from Insert type, only client-provided fields.
  * user_id is extracted from authentication context server-side.
  * FSRS parameters are initialized with default values server-side.
  */
 export type CreateFlashcardDTO = Pick<
-  Database['public']['Tables']['flashcards']['Insert'],
-  'front' | 'back' | 'is_ai_generated'
+  Database["public"]["Tables"]["flashcards"]["Insert"],
+  "front" | "back" | "is_ai_generated"
 >;
 
 /**
  * DTO for updating flashcard content
  * PATCH /api/flashcards/:id
- * 
+ *
  * Only allows updating front and back text.
  * FSRS parameters are not modified directly (only through reviews).
  */
-export type UpdateFlashcardDTO = Pick<
-  Database['public']['Tables']['flashcards']['Update'],
-  'front' | 'back'
->;
+export type UpdateFlashcardDTO = Pick<Database["public"]["Tables"]["flashcards"]["Update"], "front" | "back">;
 
 /**
  * Query parameters for fetching flashcards
@@ -88,7 +85,7 @@ export interface GetFlashcardsQueryDTO {
    * Search phrase - searches in front and back using trigrams
    */
   q?: string;
-  
+
   /**
    * Filter mode - 'all' for all cards, 'study' for cards due today
    * @default 'all'
@@ -105,7 +102,7 @@ export interface GetFlashcardsResponseDTO {
    * Array of flashcard objects with all FSRS fields
    */
   data: FlashcardDTO[];
-  
+
   /**
    * Total count of flashcards matching the query
    */
@@ -115,7 +112,7 @@ export interface GetFlashcardsResponseDTO {
 /**
  * DTO for batch creating flashcards
  * POST /api/flashcards/batch
- * 
+ *
  * Used when saving multiple AI-generated flashcards or importing cards.
  */
 export interface BatchCreateFlashcardsDTO {
@@ -144,7 +141,7 @@ export interface BatchCreateFlashcardsResponseDTO {
 /**
  * Command model for creating a review (rating a flashcard)
  * POST /api/reviews
- * 
+ *
  * Server-side will:
  * 1. Fetch current card state
  * 2. Calculate new FSRS parameters using ts-fsrs
@@ -156,13 +153,13 @@ export interface CreateReviewDTO {
    * UUID of the flashcard being reviewed
    */
   card_id: string;
-  
+
   /**
    * User's rating of how well they remembered the card
    * 1 = Again (forgot), 2 = Hard, 3 = Good, 4 = Easy
    */
   rating: Rating;
-  
+
   /**
    * Optional: Time taken to review in milliseconds
    * Used for analytics and future optimizations
@@ -180,7 +177,7 @@ export interface CreateReviewResponseDTO {
    * Useful for UI refresh or potential undo functionality
    */
   card: FlashcardDTO;
-  
+
   /**
    * ISO timestamp of when the card is next due for review
    */
@@ -194,7 +191,7 @@ export interface CreateReviewResponseDTO {
 /**
  * Command model for AI flashcard generation
  * POST /api/ai/generate
- * 
+ *
  * Generates flashcard suggestions from user notes.
  * Does NOT save anything to database - returns ephemeral drafts.
  */
@@ -208,7 +205,7 @@ export interface GenerateFlashcardsDTO {
 
 /**
  * Draft flashcard structure returned by AI
- * 
+ *
  * These are not stored in database until user explicitly saves them
  * via POST /api/flashcards or POST /api/flashcards/batch
  */
@@ -217,7 +214,7 @@ export interface FlashcardDraftDTO {
    * Generated question/prompt text (max 500 chars when saving)
    */
   front: string;
-  
+
   /**
    * Generated answer text (max 1000 chars when saving)
    */
@@ -257,12 +254,12 @@ export interface ApiErrorResponse {
    * Error message suitable for display or logging
    */
   error: string;
-  
+
   /**
    * Optional error code for client-side handling
    */
   code?: string;
-  
+
   /**
    * Optional validation errors for form fields
    */
