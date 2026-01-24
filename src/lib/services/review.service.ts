@@ -8,6 +8,9 @@
  * 4. Logs review history for analytics
  */
 
+import type { SupabaseClient } from "@supabase/supabase-js";
+
+import type { Database } from "../../db/database.types";
 import { FSRS, Rating, State, type Card, createEmptyCard } from "ts-fsrs";
 
 import type { CreateReviewDTO, FlashcardDTO } from "../../types";
@@ -16,8 +19,7 @@ import type { CreateReviewDTO, FlashcardDTO } from "../../types";
 // Types
 // ============================================================================
 
-import { supabaseClient } from "../../db/supabase.client";
-type SupabaseClientType = typeof supabaseClient;
+type SupabaseClientType = SupabaseClient<Database>;
 
 // ============================================================================
 // Constants
