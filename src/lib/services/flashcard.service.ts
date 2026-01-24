@@ -305,3 +305,47 @@ export async function updateFlashcard(
 
   return updatedCard;
 }
+
+/**
+ * Permanently deletes a flashcard from the database
+ *
+ * Flow:
+ * 1. Delete flashcard with ownership check (id + user_id)
+ * 2. Database automatically cascades deletion to review_logs
+ * 3. Return true if deleted, false if not found/unauthorized
+ *
+ * @param supabase - Supabase client instance (from context.locals)
+ * @param id - UUID of the flashcard to delete
+ * @param userId - ID of the authenticated user (for ownership check)
+ * @returns true if flashcard was deleted, false if not found or unauthorized
+ * @throws Error if database delete fails
+ */
+export async function deleteFlashcard(
+  supabase: SupabaseClientType,
+  id: string,
+  userId: string
+): Promise<boolean> {
+  // ========================================================================
+  // Step 1: Delete Flashcard with Ownership Check
+  // ========================================================================
+
+  // Delete only if card exists AND belongs to the user (IDOR protection)
+  // Database will automatically delete related review_logs (ON DELETE CASCADE)
+  const { error: deleteError, count } = await supabase
+    .from("flashcards")
+    .delete({ count: "exact" })
+    .eq("id", id)
+    .eq("user_id", userId);
+
+  // Guard: Check for delete errors
+  if (deleteError) {
+    throw new Error(`Failed to delete flashcard: ${deleteError.message}`);
+  }
+
+  // ========================================================================
+  // Step 2: Return Deletion Status
+  // ========================================================================
+
+  // Return true if at least one row was deleted, false otherwise
+  return (count ?? 0) > 0;
+}
