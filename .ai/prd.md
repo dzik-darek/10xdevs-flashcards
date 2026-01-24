@@ -27,6 +27,7 @@ Głównym problemem, który rozwiązuje aplikacja, jest wysoka bariera wejścia 
 - Pole tekstowe przyjmujące dowolne notatki użytkownika (brak sztywnego limitu znaków wejściowych, limit logiczny wynikający z tokenów modelu).
 - Wykorzystanie modelu gpt-4o-mini (poprzez API OpenRouter) do analizy tekstu i ekstrakcji pytań/odpowiedzi.
 - Odpowiedź w formacie JSON walidowana schematem Zod.
+- Przód wygenerowanej fiszki może mieć maksymalnie 500 znaków, tył wygenerowanej fiszki może mieć maksymalnie 1000 znaków.
 - Tryb "Poczekalnia" (Draft Mode): Prezentacja wygenerowanych fiszek przed zapisaniem.
 - Możliwość edycji treści (przód/tył) w trybie podglądu.
 - Możliwość odrzucenia poszczególnych fiszek lub całego zestawu.
@@ -62,7 +63,7 @@ Głównym problemem, który rozwiązuje aplikacja, jest wysoka bariera wejścia 
 - Uwierzytelnianie email/hasło.
 - Generator fiszek z tekstu (AI).
 - Manualny CRUD fiszek.
-- Algorytm powtórek FSRS.
+- Algorytm powtórek FSRS (biblioteka open source [tf-fsrs](https://github.com/open-spaced-repetition/ts-fsrs)).
 - Obsługa błędów generowania i walidacji danych.
 
 ### POZA ZAKRESEM (Out of Scope)
