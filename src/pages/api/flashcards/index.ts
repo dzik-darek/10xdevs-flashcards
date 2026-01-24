@@ -1,17 +1,24 @@
 /**
  * Flashcards API Endpoint
+ * GET /api/flashcards - Retrieve flashcards
  * POST /api/flashcards - Create a new flashcard
  *
- * This endpoint allows authenticated users to create flashcards.
- * It validates input, calls the FlashcardService, and returns the created card.
+ * This endpoint allows authenticated users to create and retrieve flashcards.
+ * It validates input, calls the FlashcardService, and returns the appropriate response.
  */
 
 import type { APIRoute } from "astro";
 import { z } from "zod";
 
 import { DEFAULT_USER_ID } from "../../../db/supabase.client";
-import { createFlashcard } from "../../../lib/services/flashcard.service";
-import type { ApiErrorResponse, ApiSuccessResponse, CreateFlashcardDTO, FlashcardDTO } from "../../../types";
+import { createFlashcard, getFlashcards } from "../../../lib/services/flashcard.service";
+import type {
+  ApiErrorResponse,
+  ApiSuccessResponse,
+  CreateFlashcardDTO,
+  FlashcardDTO,
+  GetFlashcardsResponseDTO,
+} from "../../../types";
 import { VALIDATION_CONSTRAINTS } from "../../../types";
 
 // Disable prerendering for API routes
@@ -44,6 +51,153 @@ const createFlashcardSchema = z.object({
     }),
   is_ai_generated: z.boolean(),
 });
+
+/**
+ * Zod schema for flashcard query parameters
+ * Validates q (search phrase) and mode (all or study)
+ */
+const getFlashcardsQuerySchema = z.object({
+  q: z.string().optional(),
+  mode: z.enum(["all", "study"]).optional().default("all"),
+});
+
+// ============================================================================
+// GET Handler - Retrieve Flashcards
+// ============================================================================
+
+/**
+ * GET /api/flashcards?q=...&mode=...
+ * Retrieves flashcards for the authenticated user
+ *
+ * Query Parameters:
+ * - q (optional): Search phrase - searches in front and back fields
+ * - mode (optional): Filter mode - 'all' (default) or 'study' (only cards due for review)
+ *
+ * Success Response (200):
+ * {
+ *   "data": [...FlashcardDTO],
+ *   "count": 42
+ * }
+ *
+ * Error Responses:
+ * - 400: Invalid query parameters
+ * - 401: Unauthorized
+ * - 500: Server error
+ */
+export const GET: APIRoute = async ({ url, locals }) => {
+  try {
+    // ========================================================================
+    // Step 1: Get Supabase Client
+    // ========================================================================
+
+    const supabase = locals.supabase;
+    if (!supabase) {
+      return new Response(
+        JSON.stringify({
+          error: "Supabase client not available",
+        } satisfies ApiErrorResponse),
+        {
+          status: 500,
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+    }
+
+    // ========================================================================
+    // Step 2: Authenticate User
+    // ========================================================================
+
+    // // Production: Verify user session
+    // const {
+    //   data: { user },
+    //   error: authError,
+    // } = await supabase.auth.getUser();
+    //
+    // // Guard: Check authentication
+    // if (authError || !user) {
+    //   return new Response(
+    //     JSON.stringify({
+    //       error: "Unauthorized. Please log in.",
+    //     } satisfies ApiErrorResponse),
+    //     {
+    //       status: 401,
+    //       headers: { "Content-Type": "application/json" },
+    //     }
+    //   );
+    // }
+    //
+    // const userId = user.id;
+
+    // Development: Use default user ID
+    const userId = DEFAULT_USER_ID;
+
+    // ========================================================================
+    // Step 3: Parse and Validate Query Parameters
+    // ========================================================================
+
+    // Extract query parameters from URL
+    const queryParams = Object.fromEntries(url.searchParams);
+
+    // Validate with Zod
+    const validationResult = getFlashcardsQuerySchema.safeParse(queryParams);
+
+    if (!validationResult.success) {
+      // Transform Zod errors to details object
+      const details: Record<string, string[]> = {};
+      for (const issue of validationResult.error.issues) {
+        const path = issue.path.join(".");
+        if (!details[path]) {
+          details[path] = [];
+        }
+        details[path].push(issue.message);
+      }
+
+      return new Response(
+        JSON.stringify({
+          error: "Invalid query parameters",
+          details,
+        } satisfies ApiErrorResponse),
+        {
+          status: 400,
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+    }
+
+    // ========================================================================
+    // Step 4: Call Service to Fetch Flashcards
+    // ========================================================================
+
+    const result = await getFlashcards(supabase, userId, validationResult.data);
+
+    // ========================================================================
+    // Step 5: Return Success Response
+    // ========================================================================
+
+    return new Response(JSON.stringify(result satisfies GetFlashcardsResponseDTO), {
+      status: 200,
+      headers: { "Content-Type": "application/json" },
+    });
+  } catch (error) {
+    // ========================================================================
+    // Error Handling
+    // ========================================================================
+
+    // Log error for monitoring (in production: send to error tracking service)
+    console.error("Error fetching flashcards:", error);
+
+    // Return generic error to client (don't leak implementation details)
+    return new Response(
+      JSON.stringify({
+        error: error instanceof Error ? error.message : "Failed to fetch flashcards",
+      } satisfies ApiErrorResponse),
+      {
+        status: 500,
+        headers: { "Content-Type": "application/json" },
+      }
+    );
+  }
+};
 
 // ============================================================================
 // POST Handler - Create Flashcard

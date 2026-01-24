@@ -7,7 +7,13 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 
 import type { Database } from "../../db/database.types";
-import type { CreateFlashcardDTO, FlashcardDTO, BatchCreateFlashcardsResponseDTO } from "../../types";
+import type {
+  CreateFlashcardDTO,
+  FlashcardDTO,
+  BatchCreateFlashcardsResponseDTO,
+  GetFlashcardsQueryDTO,
+  GetFlashcardsResponseDTO,
+} from "../../types";
 
 // ============================================================================
 // Types
@@ -145,4 +151,91 @@ export async function createFlashcardBatch(
   const ids = createdCards.map((card) => card.id);
 
   return { ids };
+}
+
+/**
+ * Retrieves flashcards for the authenticated user
+ *
+ * Flow:
+ * 1. Build query with user_id filter
+ * 2. Apply mode filter (study vs all)
+ * 3. Apply search filter if provided
+ * 4. Sort results appropriately
+ * 5. Return flashcards with count
+ *
+ * @param supabase - Supabase client instance (from context.locals)
+ * @param userId - ID of the authenticated user
+ * @param query - Query parameters (mode, q)
+ * @returns Flashcards matching the query with total count
+ * @throws Error if database query fails
+ */
+export async function getFlashcards(
+  supabase: SupabaseClientType,
+  userId: string,
+  query: GetFlashcardsQueryDTO
+): Promise<GetFlashcardsResponseDTO> {
+  const { mode = "all", q } = query;
+
+  // ========================================================================
+  // Step 1: Build Base Query
+  // ========================================================================
+
+  // Start with base query - select all fields and enable count
+  let queryBuilder = supabase
+    .from("flashcards")
+    .select("*", { count: "exact" })
+    .eq("user_id", userId);
+
+  // ========================================================================
+  // Step 2: Apply Mode Filter
+  // ========================================================================
+
+  if (mode === "study") {
+    // Only cards due for review (due <= now)
+    const now = new Date().toISOString();
+    queryBuilder = queryBuilder.lte("due", now);
+  }
+
+  // ========================================================================
+  // Step 3: Apply Search Filter
+  // ========================================================================
+
+  if (q && q.trim().length > 0) {
+    // Search in both front and back fields using case-insensitive LIKE
+    // Pattern: %searchTerm% to match anywhere in the text
+    const searchPattern = `%${q.trim()}%`;
+    queryBuilder = queryBuilder.or(`front.ilike.${searchPattern},back.ilike.${searchPattern}`);
+  }
+
+  // ========================================================================
+  // Step 4: Apply Sorting
+  // ========================================================================
+
+  if (mode === "study") {
+    // For study mode: sort by due date (earliest first)
+    queryBuilder = queryBuilder.order("due", { ascending: true });
+  } else {
+    // For all mode: sort by creation date (newest first)
+    queryBuilder = queryBuilder.order("created_at", { ascending: false });
+  }
+
+  // ========================================================================
+  // Step 5: Execute Query
+  // ========================================================================
+
+  const { data, error, count } = await queryBuilder;
+
+  // Guard: Check for query errors
+  if (error) {
+    throw new Error(`Failed to fetch flashcards: ${error.message}`);
+  }
+
+  // ========================================================================
+  // Step 6: Return Results
+  // ========================================================================
+
+  return {
+    data: data || [],
+    count: count || 0,
+  };
 }
