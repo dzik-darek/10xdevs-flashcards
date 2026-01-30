@@ -1,0 +1,18 @@
+---
+import Layout from '@/layouts/Layout.astro';
+import { StudySessionContainer } from '@/components/study/StudySessionContainer';
+
+export const prerender = false;
+---
+
+<Layout title="Sesja nauki">
+  <div class="container mx-auto px-4 py-8">
+    <div class="mb-8 text-center">
+      <h1 class="text-3xl font-bold tracking-tight mb-2">Sesja nauki</h1>
+      <p class="text-muted-foreground">
+        Przeglądaj fiszki i oceń jak dobrze je pamiętasz
+      </p>
+    </div>
+    <StudySessionContainer client:only="react" />
+  </div>
+</Layout>

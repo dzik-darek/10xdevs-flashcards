@@ -41,7 +41,7 @@ export const prerender = false; // Dynamic endpoint - depends on database state
 const CreateReviewSchema = z.object({
   card_id: z.string().uuid("Invalid flashcard ID format"),
   rating: z.union([z.literal(1), z.literal(2), z.literal(3), z.literal(4)], {
-    errorMap: () => ({ message: "Rating must be 1, 2, 3, or 4" }),
+    message: "Rating must be 1, 2, 3, or 4",
   }),
   review_duration_ms: z.number().int().positive("Review duration must be positive").optional(),
 }) satisfies z.ZodType<CreateReviewDTO>;
