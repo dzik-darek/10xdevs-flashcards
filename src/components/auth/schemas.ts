@@ -11,6 +11,8 @@ export type LoginFormValues = z.infer<typeof loginSchema>;
 // Validation schema for registration form
 export const registerSchema = z
   .object({
+    firstName: z.string().min(1, "Imię jest wymagane").max(100, "Imię jest za długie"),
+    surname: z.string().min(1, "Nazwisko jest wymagane").max(100, "Nazwisko jest za długie"),
     email: z.string().min(1, "Email jest wymagany").email("Nieprawidłowy format email"),
     password: z.string().min(6, "Hasło musi mieć minimum 6 znaków"),
     confirmPassword: z.string().min(1, "Potwierdzenie hasła jest wymagane"),

@@ -27,9 +27,38 @@ export const onRequest = defineMiddleware(async ({ locals, cookies, url, request
 
   // Set user in locals
   if (user) {
+    // Fetch user profile data (first_name, surname)
+    let { data: profile, error: profileError } = await supabase
+      .from("profiles")
+      .select("first_name, surname")
+      .eq("id", user.id)
+      .maybeSingle(); // Use maybeSingle() to handle missing profiles gracefully
+
+    // If profile doesn't exist (for old users), create a default one
+    if (!profile && !profileError) {
+      const { data: newProfile } = await supabase
+        .from("profiles")
+        .insert({
+          id: user.id,
+          first_name: "Użytkownik",
+          surname: "",
+        })
+        .select("first_name, surname")
+        .single();
+      
+      profile = newProfile;
+    }
+
+    // Log profile fetch errors for debugging
+    if (profileError) {
+      console.error("Error fetching user profile:", profileError);
+    }
+
     locals.user = {
       id: user.id,
       email: user.email,
+      firstName: profile?.first_name || null,
+      surname: profile?.surname || null,
     };
   } else {
     locals.user = null;

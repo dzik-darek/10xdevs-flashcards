@@ -14,6 +14,7 @@ import type {
   GetFlashcardsQueryDTO,
   GetFlashcardsResponseDTO,
   UpdateFlashcardDTO,
+  UserStatsDTO,
 } from "../../types";
 
 // ============================================================================
@@ -348,4 +349,66 @@ export async function deleteFlashcard(
 
   // Return true if at least one row was deleted, false otherwise
   return (count ?? 0) > 0;
+}
+
+/**
+ * Retrieves flashcard statistics for the authenticated user
+ *
+ * Flow:
+ * 1. Execute two parallel count queries (total and due)
+ * 2. Return counts without fetching actual flashcard data
+ *
+ * This is optimized for badge display in navigation and dashboard
+ * where we only need counts, not the actual flashcards.
+ *
+ * @param supabase - Supabase client instance (from context.locals)
+ * @param userId - ID of the authenticated user
+ * @returns Statistics with total and study counts
+ * @throws Error if database query fails
+ */
+export async function getStats(
+  supabase: SupabaseClientType,
+  userId: string
+): Promise<UserStatsDTO> {
+  // ========================================================================
+  // Step 1: Execute Parallel Count Queries
+  // ========================================================================
+
+  const now = new Date().toISOString();
+
+  // Query 1: Total count of all user's flashcards
+  const totalCountPromise = supabase
+    .from("flashcards")
+    .select("*", { count: "exact", head: true })
+    .eq("user_id", userId);
+
+  // Query 2: Count of flashcards due for review
+  const studyCountPromise = supabase
+    .from("flashcards")
+    .select("*", { count: "exact", head: true })
+    .eq("user_id", userId)
+    .lte("due", now);
+
+  // Execute both queries in parallel for efficiency
+  const [totalResult, studyResult] = await Promise.all([
+    totalCountPromise,
+    studyCountPromise,
+  ]);
+
+  // Guard: Check for query errors
+  if (totalResult.error) {
+    throw new Error(`Failed to fetch total count: ${totalResult.error.message}`);
+  }
+  if (studyResult.error) {
+    throw new Error(`Failed to fetch study count: ${studyResult.error.message}`);
+  }
+
+  // ========================================================================
+  // Step 2: Return Statistics
+  // ========================================================================
+
+  return {
+    totalCount: totalResult.count ?? 0,
+    studyCount: studyResult.count ?? 0,
+  };
 }

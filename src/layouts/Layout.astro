@@ -1,16 +1,43 @@
 ---
+/**
+ * Layout - Main application layout with Sidebar
+ *
+ * Used by all private/authenticated views
+ * Provides AppShell structure: Sidebar + Main Content
+ */
 import "../styles/global.css";
 import { Toaster } from "@/components/ui/sonner";
+import AppSidebar from "@/components/AppSidebar.astro";
+import { getStats } from "@/lib/services/flashcard.service";
 
 interface Props {
   title?: string;
 }
 
-const { title = "10x Astro Starter" } = Astro.props;
+const { title = "10xdevs Flashcards" } = Astro.props;
+
+// ============================================================================
+// Fetch User Statistics for Sidebar Badge
+// ============================================================================
+
+let studyCount = 0;
+
+// Guard: Only fetch stats if user is authenticated
+// This prevents errors on public pages that might accidentally use this layout
+if (Astro.locals.user && Astro.locals.supabase) {
+  try {
+    const stats = await getStats(Astro.locals.supabase, Astro.locals.user.id);
+    studyCount = stats.studyCount;
+  } catch (error) {
+    // Log error but don't block page render
+    // Sidebar will display without badge if stats fetch fails
+    console.error("Failed to fetch user stats for sidebar:", error);
+  }
+}
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang="pl">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
@@ -19,7 +46,17 @@ const { title = "10x Astro Starter" } = Astro.props;
     <title>{title}</title>
   </head>
   <body>
-    <slot />
+    <!-- AppShell: Sidebar + Main Content Grid -->
+    <div class="flex h-screen overflow-hidden">
+      <!-- Sidebar -->
+      <AppSidebar studyCount={studyCount} />
+
+      <!-- Main Content Area -->
+      <main class="flex-1 overflow-y-auto">
+        <slot />
+      </main>
+    </div>
+
     <Toaster client:load />
   </body>
 </html>

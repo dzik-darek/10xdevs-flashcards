@@ -1,95 +1,134 @@
 ---
+/**
+ * Dashboard Page - Main learning center
+ *
+ * Displays welcome message, study status, statistics, and quick actions
+ * Optimized to fetch only counts, not full flashcard data
+ */
 import Layout from "@/layouts/Layout.astro";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { LogoutButton } from "@/components/auth/LogoutButton";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { getStats } from "@/lib/services/flashcard.service";
+
+// ============================================================================
+// Fetch User Data and Statistics
+// ============================================================================
 
 // Get user from locals (set by middleware)
 const user = Astro.locals.user;
+
+// Guard: This should never happen due to middleware, but TypeScript needs it
+if (!user || !Astro.locals.supabase) {
+  return Astro.redirect("/login");
+}
+
+// Fetch statistics (optimized - only counts, no flashcard data)
+let stats = { totalCount: 0, studyCount: 0 };
+
+try {
+  stats = await getStats(Astro.locals.supabase, user.id);
+} catch (error) {
+  console.error("Failed to fetch dashboard stats:", error);
+  // Continue with empty stats - will show empty state
+}
+
+const { totalCount, studyCount } = stats;
+
+// Determine dashboard state
+const isEmpty = totalCount === 0;
+const hasStudyCards = studyCount > 0;
+const isZeroInbox = totalCount > 0 && studyCount === 0;
 ---
 
 <Layout title="Dashboard - 10xdevs Flashcards">
   <div class="container mx-auto max-w-7xl space-y-8 py-8">
-    <div class="flex items-center justify-between">
-      <div class="space-y-2">
-        <h1 class="text-3xl font-bold tracking-tight">Dashboard</h1>
-        <p class="text-muted-foreground">
-          {user?.email ? `Witaj, ${user.email}!` : "Witaj w aplikacji do nauki fiszek!"}
-        </p>
-      </div>
-      <div class="flex gap-2">
-        <Button variant="outline" asChild>
-          <a href="/settings">Ustawienia</a>
-        </Button>
-        <LogoutButton client:load />
-      </div>
+    <!-- Welcome Section -->
+    <div class="space-y-2">
+      <h1 class="text-3xl font-bold tracking-tight">Dashboard</h1>
+      <p class="text-muted-foreground">
+        Cześć, {user.firstName || user.email}!
+      </p>
     </div>
 
-    <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-      <!-- Quick Actions -->
-      <Card>
+    <!-- Hero Section: Dynamic Study Action Call -->
+    {isEmpty && (
+      <Alert>
+        <AlertDescription class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <p class="font-medium">Nie masz jeszcze żadnych fiszek</p>
+            <p class="text-sm text-muted-foreground">Zacznij od dodania pierwszej fiszki lub wygeneruj je automatycznie z AI</p>
+          </div>
+          <div class="flex gap-2">
+            <Button asChild>
+              <a href="/flashcards/new">Dodaj fiszkę</a>
+            </Button>
+            <Button variant="outline" asChild>
+              <a href="/ai/generate">Generuj z AI</a>
+            </Button>
+          </div>
+        </AlertDescription>
+      </Alert>
+    )}
+
+    {!isEmpty && hasStudyCards && (
+      <Card class="border-primary bg-primary/5">
         <CardHeader>
-          <CardTitle>Szybkie akcje</CardTitle>
-          <CardDescription>Często używane funkcje</CardDescription>
+          <CardTitle class="text-2xl">Gotowy do nauki?</CardTitle>
+          <CardDescription>
+            Masz {studyCount} {studyCount === 1 ? "fiszkę" : studyCount < 5 ? "fiszki" : "fiszek"} do powtórki
+          </CardDescription>
         </CardHeader>
-        <CardContent class="space-y-2">
-          <Button class="w-full" asChild>
-            <a href="/flashcards/new">Dodaj fiszkę</a>
-          </Button>
-          <Button variant="secondary" class="w-full" asChild>
+        <CardContent>
+          <Button size="lg" asChild>
             <a href="/study">Rozpocznij naukę</a>
           </Button>
-          <Button variant="outline" class="w-full" asChild>
-            <a href="/ai/generate">Generuj z AI</a>
-          </Button>
         </CardContent>
       </Card>
+    )}
 
-      <!-- Statistics Placeholder -->
-      <Card>
-        <CardHeader>
-          <CardTitle>Statystyki</CardTitle>
-          <CardDescription>Twoje postępy w nauce</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div class="space-y-4">
-            <div>
-              <p class="text-sm font-medium text-muted-foreground">Fiszki w bazie</p>
-              <p class="text-2xl font-bold">0</p>
-            </div>
-            <div>
-              <p class="text-sm font-medium text-muted-foreground">Do powtórki dzisiaj</p>
-              <p class="text-2xl font-bold">0</p>
-            </div>
+    {!isEmpty && isZeroInbox && (
+      <Alert>
+        <AlertDescription class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <p class="font-medium">🎉 Świetna robota! Zero Inbox</p>
+            <p class="text-sm text-muted-foreground">Nie masz fiszek do powtórki. Wróć później lub dodaj nowe fiszki.</p>
           </div>
+          <div class="flex gap-2">
+            <Button variant="outline" asChild>
+              <a href="/flashcards/new">Dodaj fiszkę</a>
+            </Button>
+            <Button variant="outline" asChild>
+              <a href="/ai/generate">Generuj z AI</a>
+            </Button>
+          </div>
+        </AlertDescription>
+      </Alert>
+    )}
+
+    <!-- Statistics Grid -->
+    <div class="grid gap-6 md:grid-cols-2">
+      <!-- Total Flashcards Stat -->
+      <Card>
+        <CardHeader>
+          <CardTitle>Wszystkie fiszki</CardTitle>
+          <CardDescription>Fiszki w Twojej bazie</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <p class="text-4xl font-bold">{totalCount}</p>
         </CardContent>
       </Card>
 
-      <!-- Recent Activity Placeholder -->
+      <!-- Study Count Stat -->
       <Card>
         <CardHeader>
-          <CardTitle>Ostatnia aktywność</CardTitle>
-          <CardDescription>Twoje niedawne sesje nauki</CardDescription>
+          <CardTitle>Do powtórki</CardTitle>
+          <CardDescription>Fiszki czekające na Ciebie</CardDescription>
         </CardHeader>
         <CardContent>
-          <p class="text-sm text-muted-foreground">
-            Brak ostatniej aktywności. Rozpocznij naukę, aby zobaczyć swoje postępy!
-          </p>
+          <p class="text-4xl font-bold">{studyCount}</p>
         </CardContent>
       </Card>
     </div>
-
-    <!-- Navigation to other sections -->
-    <Card>
-      <CardHeader>
-        <CardTitle>Zarządzanie fiszkami</CardTitle>
-        <CardDescription>Przeglądaj i edytuj swoje fiszki</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <Button variant="outline" asChild>
-          <a href="/flashcards">Przejdź do listy fiszek</a>
-        </Button>
-      </CardContent>
-    </Card>
   </div>
 </Layout>

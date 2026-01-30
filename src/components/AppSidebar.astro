@@ -1,0 +1,145 @@
+---
+/**
+ * AppSidebar - Global navigation component
+ *
+ * Rendered server-side (Astro) for all private views
+ * Displays navigation links, active state, and study count badge
+ */
+import { Home, Library, Sparkles, Plus, Settings, Play } from "lucide-react";
+import { LogoutButton } from "@/components/auth/LogoutButton";
+
+interface Props {
+  /**
+   * Number of flashcards due for review
+   * Displayed as badge on Dashboard link
+   */
+  studyCount?: number;
+}
+
+const { studyCount = 0 } = Astro.props;
+
+// Get current pathname to determine active link
+const currentPath = Astro.url.pathname;
+
+// Navigation items configuration
+const navItems = [
+  {
+    href: "/dashboard",
+    label: "Dashboard",
+    icon: Home,
+    showBadge: false,
+  },
+  {
+    href: "/study",
+    label: "Rozpocznij naukę",
+    icon: Play,
+    showBadge: true,
+    highlight: true, // Special styling for primary action
+  },
+  {
+    href: "/flashcards",
+    label: "Moje Fiszki",
+    icon: Library,
+    showBadge: false,
+  },
+  {
+    href: "/ai/generate",
+    label: "Generator AI",
+    icon: Sparkles,
+    showBadge: false,
+  },
+  {
+    href: "/flashcards/new",
+    label: "Dodaj ręcznie",
+    icon: Plus,
+    showBadge: false,
+  },
+  {
+    href: "/settings",
+    label: "Ustawienia",
+    icon: Settings,
+    showBadge: false,
+  },
+];
+
+// Helper function to determine if link is active
+function isActive(href: string): boolean {
+  // Special case: dashboard is active on / or /dashboard
+  if (href === "/dashboard") {
+    return currentPath === "/dashboard" || currentPath === "/";
+  }
+  
+  // For exact match routes (like /flashcards/new, /ai/generate, /settings, /study)
+  // we want exact matching to prevent parent paths from being active
+  if (href === "/flashcards/new" || href === "/ai/generate" || href === "/settings" || href === "/study") {
+    return currentPath === href;
+  }
+  
+  // For base paths like /flashcards, use startsWith but ensure it's not a more specific route
+  if (href === "/flashcards") {
+    return currentPath === "/flashcards" || (currentPath.startsWith("/flashcards/") && currentPath !== "/flashcards/new");
+  }
+  
+  // Default: exact match
+  return currentPath === href;
+}
+---
+
+<aside
+  class="flex h-screen w-64 flex-col border-r bg-background"
+  aria-label="Główna nawigacja"
+>
+  <!-- Logo / Brand Section -->
+  <div class="flex h-16 items-center border-b px-6">
+    <a href="/dashboard" class="flex items-center gap-2">
+      <span class="text-xl font-bold">🎴 Flashcards</span>
+    </a>
+  </div>
+
+  <!-- Navigation Links -->
+  <nav class="flex-1 space-y-1 overflow-y-auto px-3 py-4">
+    {
+      navItems.map((item) => {
+        const active = isActive(item.href);
+        const Icon = item.icon;
+        const isHighlighted = item.highlight && studyCount > 0;
+
+        return (
+          <a
+            href={item.href}
+            class={`
+              flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors
+              ${
+                active
+                  ? "bg-primary text-primary-foreground"
+                  : isHighlighted
+                    ? "bg-primary/10 text-primary hover:bg-primary/20"
+                    : "text-muted-foreground hover:bg-muted hover:text-foreground"
+              }
+            `}
+            aria-current={active ? "page" : undefined}
+          >
+            <Icon className="h-5 w-5 flex-shrink-0" />
+            <span class="flex-1">{item.label}</span>
+            {item.showBadge && studyCount > 0 && (
+              <span
+                class={`
+                  flex h-5 min-w-5 items-center justify-center rounded-full px-1.5 text-xs font-semibold
+                  ${active ? "bg-primary-foreground text-primary" : "bg-primary text-primary-foreground"}
+                `}
+                aria-label={`${studyCount} fiszek do powtórki`}
+              >
+                {studyCount}
+              </span>
+            )}
+          </a>
+        );
+      })
+    }
+  </nav>
+
+  <!-- Footer / Logout Section -->
+  <div class="border-t p-4">
+    <LogoutButton client:load />
+  </div>
+</aside>

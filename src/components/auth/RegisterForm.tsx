@@ -31,6 +31,8 @@ export function RegisterForm() {
   const form = useForm<RegisterFormValues>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
+      firstName: "",
+      surname: "",
       email: "",
       password: "",
       confirmPassword: "",
@@ -50,6 +52,8 @@ export function RegisterForm() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
+          firstName: values.firstName,
+          surname: values.surname,
           email: values.email,
           password: values.password,
         }),
@@ -89,6 +93,46 @@ export function RegisterForm() {
                 <AlertDescription>{serverError}</AlertDescription>
               </Alert>
             )}
+
+            <FormField
+              control={form.control}
+              name="firstName"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Imię</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="text"
+                      placeholder="Jan"
+                      autoComplete="given-name"
+                      disabled={isSubmitting}
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="surname"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Nazwisko</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="text"
+                      placeholder="Kowalski"
+                      autoComplete="family-name"
+                      disabled={isSubmitting}
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
             <FormField
               control={form.control}

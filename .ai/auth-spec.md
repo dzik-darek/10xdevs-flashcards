@@ -88,7 +88,7 @@ Kluczowy element bezpieczeństwa. Należy przebudować istniejący middleware.
 2.  **`src/pages/api/auth/user.ts` (DELETE)**
     *   Implementacja US-003 (Hard Delete).
     *   Wymaga aktywnej sesji użytkownika (weryfikacja w middleware/endpoint).
-    *   Używa `supabaseAdmin` (klient z uprawnieniami `service_role` - wymaga zmiennej środowiskowej `SUPABASE_SERVICE_ROLE_KEY`), aby usunąć użytkownika z tabeli `auth.users`.
+    *   Użytkownik powinien mieć możliwość usunąć swoje konto wraz z wpisem w tabeli `auth.users`.
     *   Usunięcie z `auth.users` kaskadowo usunie dane z tabel `public` (profile, flashcards) dzięki kluczom obcym `ON DELETE CASCADE` (zdefiniowanym w migracji 20260124100100_create_profiles_table.sql).
 
 ## 3. System Autentykacji (Supabase + Astro)

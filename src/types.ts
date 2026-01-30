@@ -229,6 +229,29 @@ export interface GenerateFlashcardsResponseDTO {
 }
 
 // ============================================================================
+// User Stats API DTOs
+// ============================================================================
+
+/**
+ * DTO for user statistics
+ * GET /api/user/stats
+ *
+ * Returns counts of flashcards without fetching the actual cards
+ * for efficient badge display in navigation
+ */
+export interface UserStatsDTO {
+  /**
+   * Total count of all user's flashcards
+   */
+  totalCount: number;
+
+  /**
+   * Count of flashcards due for review (due <= NOW())
+   */
+  studyCount: number;
+}
+
+// ============================================================================
 // Common API Response Wrappers
 // ============================================================================
 
