@@ -23,7 +23,6 @@ import { z } from "zod";
 
 import type { CreateReviewDTO, CreateReviewResponseDTO, ApiErrorResponse } from "../../../types";
 import { submitReview } from "../../../lib/services/review.service";
-import { DEFAULT_USER_ID } from "../../../db/supabase.client";
 
 // ============================================================================
 // Configuration
@@ -59,31 +58,16 @@ export const POST: APIRoute = async ({ request, locals }) => {
     // Step 1: Authentication Check
     // ========================================================================
 
-    // DEV MODE: Using hardcoded user ID for development/testing
-    // TODO: Uncomment the real authentication code below when auth is implemented
-    const userId = DEFAULT_USER_ID;
+    // Check if user is authenticated (middleware should have set this)
+    if (!locals.user) {
+      return createErrorResponse(
+        401,
+        "Authentication required. Please log in to submit reviews.",
+        "UNAUTHORIZED",
+      );
+    }
 
-    // PRODUCTION CODE (currently commented out):
-    // const supabase = locals.supabase;
-    // if (!supabase) {
-    //   return createErrorResponse(500, "Supabase client not initialized", "INTERNAL_ERROR");
-    // }
-    //
-    // // Verify user session
-    // const {
-    //   data: { user },
-    //   error: authError,
-    // } = await supabase.auth.getUser();
-    //
-    // if (authError || !user) {
-    //   return createErrorResponse(
-    //     401,
-    //     "Authentication required. Please log in to submit reviews.",
-    //     "UNAUTHORIZED"
-    //   );
-    // }
-    //
-    // const userId = user.id;
+    const userId = locals.user.id;
 
     // Get Supabase client from locals
     const supabase = locals.supabase;

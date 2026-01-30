@@ -1,8 +1,5 @@
 ---
-import Welcome from "../components/Welcome.astro";
-import Layout from "../layouts/Layout.astro";
+// Redirect root path to dashboard
+// Middleware will handle authentication and redirect to /login if not authenticated
+return Astro.redirect("/dashboard");
 ---
-
-<Layout>
-  <Welcome />
-</Layout>

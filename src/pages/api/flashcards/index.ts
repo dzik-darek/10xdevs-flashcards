@@ -10,7 +10,6 @@
 import type { APIRoute } from "astro";
 import { z } from "zod";
 
-import { DEFAULT_USER_ID } from "../../../db/supabase.client";
 import { createFlashcard, getFlashcards } from "../../../lib/services/flashcard.service";
 import type {
   ApiErrorResponse,
@@ -107,29 +106,20 @@ export const GET: APIRoute = async ({ url, locals }) => {
     // Step 2: Authenticate User
     // ========================================================================
 
-    // // Production: Verify user session
-    // const {
-    //   data: { user },
-    //   error: authError,
-    // } = await supabase.auth.getUser();
-    //
-    // // Guard: Check authentication
-    // if (authError || !user) {
-    //   return new Response(
-    //     JSON.stringify({
-    //       error: "Unauthorized. Please log in.",
-    //     } satisfies ApiErrorResponse),
-    //     {
-    //       status: 401,
-    //       headers: { "Content-Type": "application/json" },
-    //     }
-    //   );
-    // }
-    //
-    // const userId = user.id;
+    // Check if user is authenticated (middleware should have set this)
+    if (!locals.user) {
+      return new Response(
+        JSON.stringify({
+          error: "Unauthorized. Please log in.",
+        } satisfies ApiErrorResponse),
+        {
+          status: 401,
+          headers: { "Content-Type": "application/json" },
+        },
+      );
+    }
 
-    // Development: Use default user ID
-    const userId = DEFAULT_USER_ID;
+    const userId = locals.user.id;
 
     // ========================================================================
     // Step 3: Parse and Validate Query Parameters
@@ -247,29 +237,20 @@ export const POST: APIRoute = async ({ request, locals }) => {
     // Step 2: Authenticate User
     // ========================================================================
 
-    // // Production: Verify user session
-    // const {
-    //   data: { user },
-    //   error: authError,
-    // } = await supabase.auth.getUser();
-    //
-    // // Guard: Check authentication
-    // if (authError || !user) {
-    //   return new Response(
-    //     JSON.stringify({
-    //       error: "Unauthorized. Please log in.",
-    //     } satisfies ApiErrorResponse),
-    //     {
-    //       status: 401,
-    //       headers: { "Content-Type": "application/json" },
-    //     }
-    //   );
-    // }
-    //
-    // const userId = user.id;
+    // Check if user is authenticated (middleware should have set this)
+    if (!locals.user) {
+      return new Response(
+        JSON.stringify({
+          error: "Unauthorized. Please log in.",
+        } satisfies ApiErrorResponse),
+        {
+          status: 401,
+          headers: { "Content-Type": "application/json" },
+        },
+      );
+    }
 
-    // Development: Use default user ID
-    const userId = DEFAULT_USER_ID;
+    const userId = locals.user.id;
 
     // ========================================================================
     // Step 3: Parse and Validate Request Body

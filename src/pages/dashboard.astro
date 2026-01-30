@@ -1,0 +1,95 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { LogoutButton } from "@/components/auth/LogoutButton";
+
+// Get user from locals (set by middleware)
+const user = Astro.locals.user;
+---
+
+<Layout title="Dashboard - 10xdevs Flashcards">
+  <div class="container mx-auto max-w-7xl space-y-8 py-8">
+    <div class="flex items-center justify-between">
+      <div class="space-y-2">
+        <h1 class="text-3xl font-bold tracking-tight">Dashboard</h1>
+        <p class="text-muted-foreground">
+          {user?.email ? `Witaj, ${user.email}!` : "Witaj w aplikacji do nauki fiszek!"}
+        </p>
+      </div>
+      <div class="flex gap-2">
+        <Button variant="outline" asChild>
+          <a href="/settings">Ustawienia</a>
+        </Button>
+        <LogoutButton client:load />
+      </div>
+    </div>
+
+    <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+      <!-- Quick Actions -->
+      <Card>
+        <CardHeader>
+          <CardTitle>Szybkie akcje</CardTitle>
+          <CardDescription>Często używane funkcje</CardDescription>
+        </CardHeader>
+        <CardContent class="space-y-2">
+          <Button class="w-full" asChild>
+            <a href="/flashcards/new">Dodaj fiszkę</a>
+          </Button>
+          <Button variant="secondary" class="w-full" asChild>
+            <a href="/study">Rozpocznij naukę</a>
+          </Button>
+          <Button variant="outline" class="w-full" asChild>
+            <a href="/ai/generate">Generuj z AI</a>
+          </Button>
+        </CardContent>
+      </Card>
+
+      <!-- Statistics Placeholder -->
+      <Card>
+        <CardHeader>
+          <CardTitle>Statystyki</CardTitle>
+          <CardDescription>Twoje postępy w nauce</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div class="space-y-4">
+            <div>
+              <p class="text-sm font-medium text-muted-foreground">Fiszki w bazie</p>
+              <p class="text-2xl font-bold">0</p>
+            </div>
+            <div>
+              <p class="text-sm font-medium text-muted-foreground">Do powtórki dzisiaj</p>
+              <p class="text-2xl font-bold">0</p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      <!-- Recent Activity Placeholder -->
+      <Card>
+        <CardHeader>
+          <CardTitle>Ostatnia aktywność</CardTitle>
+          <CardDescription>Twoje niedawne sesje nauki</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <p class="text-sm text-muted-foreground">
+            Brak ostatniej aktywności. Rozpocznij naukę, aby zobaczyć swoje postępy!
+          </p>
+        </CardContent>
+      </Card>
+    </div>
+
+    <!-- Navigation to other sections -->
+    <Card>
+      <CardHeader>
+        <CardTitle>Zarządzanie fiszkami</CardTitle>
+        <CardDescription>Przeglądaj i edytuj swoje fiszki</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <Button variant="outline" asChild>
+          <a href="/flashcards">Przejdź do listy fiszek</a>
+        </Button>
+      </CardContent>
+    </Card>
+  </div>
+</Layout>

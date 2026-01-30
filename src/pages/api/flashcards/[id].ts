@@ -10,7 +10,6 @@
 import type { APIRoute } from "astro";
 import { z } from "zod";
 
-import { DEFAULT_USER_ID } from "../../../db/supabase.client";
 import { deleteFlashcard, updateFlashcard } from "../../../lib/services/flashcard.service";
 import type { ApiErrorResponse, UpdateFlashcardDTO } from "../../../types";
 import { VALIDATION_CONSTRAINTS } from "../../../types";
@@ -121,24 +120,19 @@ export const PATCH: APIRoute = async ({ params, request, locals }) => {
     // Step 2: Authentication Check
     // ========================================================================
 
-    // TODO: Uncomment when authentication is implemented
-    // const session = await locals.supabase.auth.getSession();
-    // const user = session?.data?.session?.user;
-    //
-    // // Guard: Check if user is authenticated
-    // if (!user) {
-    //   const errorResponse: ApiErrorResponse = {
-    //     error: "Authentication required",
-    //     code: "UNAUTHORIZED",
-    //   };
-    //   return new Response(JSON.stringify(errorResponse), {
-    //     status: 401,
-    //     headers: { "Content-Type": "application/json" },
-    //   });
-    // }
+    // Check if user is authenticated (middleware should have set this)
+    if (!locals.user) {
+      const errorResponse: ApiErrorResponse = {
+        error: "Authentication required",
+        code: "UNAUTHORIZED",
+      };
+      return new Response(JSON.stringify(errorResponse), {
+        status: 401,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
 
-    // Development: Use default user ID
-    const userId = DEFAULT_USER_ID;
+    const userId = locals.user.id;
 
     // ========================================================================
     // Step 3: Parse and Validate Request Body
@@ -287,24 +281,19 @@ export const DELETE: APIRoute = async ({ params, locals }) => {
     // Step 2: Authentication Check
     // ========================================================================
 
-    // TODO: Uncomment when authentication is implemented
-    // const session = await locals.supabase.auth.getSession();
-    // const user = session?.data?.session?.user;
-    //
-    // // Guard: Check if user is authenticated
-    // if (!user) {
-    //   const errorResponse: ApiErrorResponse = {
-    //     error: "Authentication required",
-    //     code: "UNAUTHORIZED",
-    //   };
-    //   return new Response(JSON.stringify(errorResponse), {
-    //     status: 401,
-    //     headers: { "Content-Type": "application/json" },
-    //   });
-    // }
+    // Check if user is authenticated (middleware should have set this)
+    if (!locals.user) {
+      const errorResponse: ApiErrorResponse = {
+        error: "Authentication required",
+        code: "UNAUTHORIZED",
+      };
+      return new Response(JSON.stringify(errorResponse), {
+        status: 401,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
 
-    // Development: Use default user ID
-    const userId = DEFAULT_USER_ID;
+    const userId = locals.user.id;
 
     // ========================================================================
     // Step 3: Delete Flashcard via Service

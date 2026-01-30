@@ -1,0 +1,80 @@
+flowchart TD
+    %% Definicje stylów
+    classDef astropage fill:#e1eeff,stroke:#0050c0,stroke-width:2px;
+    classDef reactcomp fill:#fff4e6,stroke:#d97706,stroke-width:2px;
+    classDef layout fill:#f0fdf4,stroke:#16a34a,stroke-width:2px;
+    classDef logic fill:#f3f4f6,stroke:#4b5563,stroke-width:2px,stroke-dasharray: 5 5;
+    classDef external fill:#fff,stroke:#000,stroke-width:1px;
+
+    %% Aktor
+    User((Użytkownik))
+
+    %% Warstwa Logiki Backendowej (Middleware)
+    subgraph "Routing i Ochrona (Server-Side)"
+        Middleware[Middleware\nsrc/middleware/index.ts]:::logic
+        RouteGuard{Sprawdzenie Sesji}:::logic
+    end
+
+    %% Warstwa Layoutów
+    subgraph "Layouty"
+        AuthLayout[AuthLayout\nsrc/layouts/AuthLayout.astro]:::layout
+        AppLayout[Layout\nsrc/layouts/Layout.astro]:::layout
+    end
+
+    %% Warstwa Stron (Astro)
+    subgraph "Strony (SSR)"
+        LoginPg[Strona Logowania\nsrc/pages/login.astro]:::astropage
+        RegisterPg[Strona Rejestracji\nsrc/pages/register.astro]:::astropage
+        DashboardPg[Dashboard\nsrc/pages/dashboard.astro]:::astropage
+        SettingsPg[Ustawienia\nsrc/pages/settings.astro]:::astropage
+    end
+
+    %% Warstwa Komponentów (React)
+    subgraph "Komponenty (Client-Side)"
+        LoginForm[LoginForm\nsrc/components/auth/LoginForm.tsx]:::reactcomp
+        RegisterForm[RegisterForm\nsrc/components/auth/RegisterForm.tsx]:::reactcomp
+        DeleteAccount[DeleteAccount\nsrc/components/auth/DeleteAccount.tsx]:::reactcomp
+        AuthAlert[Alert\nsrc/components/ui/alert.tsx]:::reactcomp
+    end
+
+    %% Warstwa API i Usług
+    subgraph "API i Backend"
+        SupabaseClient[Supabase Client SDK]:::external
+        SupabaseServer[Supabase Server SDK]:::external
+        DeleteUserAPI[API: Delete User\nsrc/pages/api/auth/user.ts]:::logic
+        SupabaseAdmin[Supabase Admin\nService Role]:::external
+    end
+
+    %% Połączenia - Routing
+    User --> Middleware
+    Middleware --> RouteGuard
+    
+    RouteGuard -- "Brak Sesji (Guest)" --> LoginPg
+    RouteGuard -- "Brak Sesji (Guest)" --> RegisterPg
+    RouteGuard -- "Sesja Aktywna (Auth)" --> DashboardPg
+    RouteGuard -- "Sesja Aktywna (Auth)" --> SettingsPg
+
+    %% Połączenia - Struktura Stron
+    LoginPg --- AuthLayout
+    RegisterPg --- AuthLayout
+    DashboardPg --- AppLayout
+    SettingsPg --- AppLayout
+
+    %% Połączenia - Komponenty
+    LoginPg --> LoginForm
+    RegisterPg --> RegisterForm
+    SettingsPg --> DeleteAccount
+    
+    LoginForm --- AuthAlert
+    RegisterForm --- AuthAlert
+
+    %% Połączenia - Logika i Dane
+    LoginForm -- "signInWithPassword" --> SupabaseClient
+    RegisterForm -- "signUp" --> SupabaseClient
+    
+    DeleteAccount -- "DELETE /api/auth/user" --> DeleteUserAPI
+    DeleteUserAPI -- "deleteUser (Admin)" --> SupabaseAdmin
+
+    %% Informacje zwrotne
+    SupabaseClient -.->|"Token Sesji (Cookie)"| Middleware
+    DeleteUserAPI -.->|"Wylogowanie"| Middleware

@@ -1,0 +1,8 @@
+---
+import AuthLayout from "@/layouts/AuthLayout.astro";
+import { LoginForm } from "@/components/auth/LoginForm";
+---
+
+<AuthLayout title="Logowanie - 10xdevs Flashcards" description="Zaloguj się do swojego konta">
+  <LoginForm client:load />
+</AuthLayout>
