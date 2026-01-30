@@ -1,0 +1,12 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import { CreateFlashcardForm } from "@/components/flashcards/CreateFlashcardForm";
+
+export const prerender = false;
+---
+
+<Layout title="Dodaj nową fiszkę">
+  <div class="container mx-auto px-4 py-8">
+    <CreateFlashcardForm client:load />
+  </div>
+</Layout>
