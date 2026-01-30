@@ -49,7 +49,7 @@ Zarządzanie kolekcją fiszek (CRUD).
 #### **Utwórz fiszkę**
 *   **Metoda:** `POST`
 *   **Ścieżka:** `/api/flashcards`
-*   **Opis:** Tworzy nową fiszkę (ręcznie lub zatwierdzoną z AI).
+*   **Opis:** Tworzy nową fiszkę (ręcznie).
 *   **Body Żądania:**
     ```json
     {
@@ -71,7 +71,7 @@ Zarządzanie kolekcją fiszek (CRUD).
 #### **Utwórz wiele fiszek jednocześnie**
 *   **Metoda:** `POST`
 *   **Ścieżka:** `/api/flashcards/batch`
-*   **Opis:** Tworzy wiele fiszek naraz (np. wygenerowane przez AI lub importowane przez użytkownika).
+*   **Opis:** Tworzy wiele fiszek naraz (wygenerowane przez AI).
 *   **Body Żądania:**
     ```json
     {

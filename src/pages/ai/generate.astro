@@ -1,0 +1,23 @@
+---
+/**
+ * AI Generator Page - /ai/generate
+ * Allows users to generate flashcards from notes using AI
+ * 
+ * Note: This page should be protected by authentication middleware in production
+ */
+
+import Layout from '@/layouts/Layout.astro';
+import { AIGeneratorWizard } from '@/components/ai/AIGeneratorWizard';
+
+// TODO: Add authentication check when auth is implemented
+// const session = await Astro.locals.supabase.auth.getSession();
+// if (!session.data.session) {
+//   return Astro.redirect('/login');
+// }
+
+export const prerender = false;
+---
+
+<Layout title="Generuj fiszki AI - Flashcards">
+  <AIGeneratorWizard client:only="react" />
+</Layout>
