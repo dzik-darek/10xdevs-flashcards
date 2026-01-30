@@ -1,0 +1,10 @@
+---
+import Layout from '@/layouts/Layout.astro';
+import FlashcardDashboard from '@/components/flashcards/FlashcardDashboard';
+
+export const prerender = false;
+---
+
+<Layout title="Moje fiszki">
+  <FlashcardDashboard client:load />
+</Layout>
