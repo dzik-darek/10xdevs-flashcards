@@ -1,6 +1,6 @@
 import type { APIRoute } from "astro";
 
-import { createSupabaseAdminClient, createSupabaseServerInstance } from "@/db/supabase.client";
+import { createSupabaseServerInstance } from "@/db/supabase.client";
 
 export const prerender = false;
 
@@ -24,9 +24,8 @@ export const DELETE: APIRoute = async ({ request, cookies, locals }) => {
       headers: request.headers,
     });
 
-    // Delete user account (requires the service role key)
-    const adminSupabase = createSupabaseAdminClient();
-    const { error } = await adminSupabase.auth.admin.deleteUser(locals.user.id);
+    // Delete user account using custom database function (this will cascade delete all related data due to ON DELETE CASCADE)
+    const { error } = await supabase.rpc('deleteUser' as any);
 
     if (error) {
       return new Response(

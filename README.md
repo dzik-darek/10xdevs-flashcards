@@ -46,6 +46,12 @@ Instead of spending hours manually creating flashcards, users can simply paste t
 - **AI Provider**: [OpenRouter](https://openrouter.ai/) (Accessing OpenAI models)
 - **Hosting**: Docker / DigitalOcean
 
+### Testing
+- **Unit Testing**: [Vitest](https://vitest.dev/) (Fast unit test framework compatible with Vite/Astro)
+- **Component Testing**: [Testing Library](https://testing-library.com/) (React component testing utilities)
+- **E2E Testing**: [Playwright](https://playwright.dev/) (Cross-browser end-to-end testing)
+- **API Mocking**: [MSW](https://mswjs.io/) (Mock Service Worker for API request interception)
+
 ## Getting Started Locally
 
 Follow these instructions to get a copy of the project up and running on your local machine.
@@ -107,6 +113,9 @@ In the project directory, you can run:
 | `npm run lint` | Runs ESLint to identify code quality issues. |
 | `npm run lint:fix` | Runs ESLint and automatically fixes fixable issues. |
 | `npm run format` | Formats code using Prettier. |
+| `npm run test` | Runs unit and component tests with Vitest. |
+| `npm run test:ui` | Opens Vitest UI for interactive test debugging. |
+| `npm run test:e2e` | Runs end-to-end tests with Playwright. |
 
 ## Project Scope
 
