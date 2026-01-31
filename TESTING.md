@@ -77,6 +77,47 @@ server.use(
 
 ## E2E Testing with Playwright
 
+### Setup
+
+Before running E2E tests, create a `.env.test` file in the project root with the following variables:
+
+```bash
+# Required: Test user credentials
+E2E_USERNAME=your-test-user@example.com
+E2E_PASSWORD=your-test-password
+
+# Optional: Base URL (defaults to http://localhost:3000)
+E2E_BASE_URL=http://localhost:3000
+```
+
+### Testing Environments
+
+#### Local Testing (Default)
+When `E2E_BASE_URL` is set to `localhost` or omitted, Playwright will:
+- Automatically start the local dev server before tests
+- Run tests against your local environment
+- Stop the server after tests complete
+
+```bash
+# .env.test for local testing
+E2E_USERNAME=test@example.com
+E2E_PASSWORD=testpassword123
+# E2E_BASE_URL is optional - defaults to http://localhost:3000
+```
+
+#### Remote/Supabase Hosted Testing
+When `E2E_BASE_URL` points to a remote server, Playwright will:
+- Skip starting the local dev server
+- Test directly against the remote URL
+- Use the same test suite without code changes
+
+```bash
+# .env.test for remote testing
+E2E_USERNAME=test@example.com
+E2E_PASSWORD=testpassword123
+E2E_BASE_URL=https://your-app.supabase.co
+```
+
 ### Running E2E Tests
 
 ```bash
@@ -92,39 +133,49 @@ npm run test:e2e:debug
 
 ### Test Structure
 
-E2E tests are located in the `e2e/` directory at the project root.
+E2E tests are located in the `e2e/` directory at the project root. See `e2e/README.md` for detailed documentation.
 
 ```
 e2e/
-  auth.spec.ts           ← Authentication tests
-  flashcards.spec.ts     ← Flashcard feature tests
-  page-objects/
-    index.ts             ← Page Object Models
+  auth/
+    login.spec.ts          ← Login flow tests (US-002)
+    authenticated.spec.ts  ← Authenticated user tests
+  pages/
+    LoginPage.ts           ← Login page POM
+    DashboardPage.ts       ← Dashboard page POM
+  fixtures/
+    auth.fixture.ts        ← Authentication fixtures
+  helpers/
+    test-helpers.ts        ← Test utilities
 ```
 
 ### Writing E2E Tests
 
+Use the Page Object Model pattern for maintainable tests:
+
 ```typescript
 import { test, expect } from '@playwright/test';
+import { LoginPage } from '../pages/LoginPage';
 
-test('should navigate to login page', async ({ page }) => {
-  await page.goto('/');
-  await page.getByRole('link', { name: /login/i }).click();
-  await expect(page).toHaveURL('/login');
+test('should login successfully', async ({ page }) => {
+  const loginPage = new LoginPage(page);
+  await loginPage.goto();
+  await loginPage.login('user@example.com', 'password');
+  await loginPage.waitForSuccessfulLogin();
+  
+  await expect(page).toHaveURL('/dashboard');
 });
 ```
 
-### Page Object Model
-
-The project uses the Page Object Model pattern for maintainable E2E tests. Page objects are defined in `e2e/page-objects/`.
+For tests requiring authentication, use fixtures:
 
 ```typescript
-import { test, expect } from './page-objects';
+import { test, expect } from '../fixtures/auth.fixture';
 
-test('login flow', async ({ loginPage, dashboardPage }) => {
-  await loginPage.goto();
-  await loginPage.login('user@example.com', 'password');
-  await dashboardPage.isLoaded();
+test('should access dashboard when authenticated', async ({ authenticatedPage, dashboardPage }) => {
+  await dashboardPage.goto();
+  await dashboardPage.waitForLoad();
+  expect(await dashboardPage.isVisible()).toBe(true);
 });
 ```
 

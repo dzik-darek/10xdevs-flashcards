@@ -51,8 +51,31 @@ npm run test:e2e # in another terminal
 
 E2E tests require environment variables defined in `.env.test`:
 
-- `E2E_USERNAME` - Test user email
-- `E2E_PASSWORD` - Test user password
+- `E2E_USERNAME` - Test user email (required)
+- `E2E_PASSWORD` - Test user password (required)
+- `E2E_BASE_URL` - Base URL for testing (optional, defaults to `http://localhost:3000`)
+
+### Testing Environments
+
+#### Local Development (default)
+```bash
+# .env.test
+E2E_USERNAME=test@example.com
+E2E_PASSWORD=testpassword123
+E2E_BASE_URL=http://localhost:3000  # Optional - this is the default
+```
+
+The local dev server will be automatically started before tests run.
+
+#### Remote/Supabase Hosted
+```bash
+# .env.test
+E2E_USERNAME=test@example.com
+E2E_PASSWORD=testpassword123
+E2E_BASE_URL=https://your-app.supabase.co
+```
+
+When `E2E_BASE_URL` points to a remote server (not localhost), Playwright will **not** start a local dev server. It will test directly against the remote URL.
 
 ## Page Object Model (POM)
 
@@ -104,3 +127,18 @@ await page.getByTestId("login-submit-button").click();
 4. **Isolate Tests** - Each test should be independent
 5. **Clean Up** - Use fixtures for setup/teardown
 6. **Meaningful Names** - Test names should describe behavior clearly
+7. **Environment Agnostic** - Tests should work both locally and remotely by using `E2E_BASE_URL`
+
+## Switching Between Environments
+
+To switch from local to remote testing or vice versa, simply update `E2E_BASE_URL` in `.env.test`:
+
+```bash
+# For local testing
+E2E_BASE_URL=http://localhost:3000
+
+# For staging/production testing
+E2E_BASE_URL=https://your-app.supabase.co
+```
+
+No code changes needed! Playwright automatically detects the environment and adjusts its behavior.

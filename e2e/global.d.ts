@@ -7,7 +7,7 @@ declare global {
     interface ProcessEnv {
       E2E_USERNAME?: string;
       E2E_PASSWORD?: string;
-      OPENROUTER_API_KEY?: string;
+      E2E_BASE_URL?: string;
       CI?: string;
     }
   }
