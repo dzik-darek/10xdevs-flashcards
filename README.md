@@ -10,7 +10,7 @@
 
 Instead of spending hours manually creating flashcards, users can simply paste their notes, and the integrated AI (powered by OpenAI via OpenRouter) automatically extracts key concepts and generates questions and answers. The application focuses on a desktop-first experience to streamline the workflow between studying materials and reviewing knowledge.
 
-## Table of Contents
+## Table of Contents 
 
 - [Features](#features)
 - [Tech Stack](#tech-stack)
