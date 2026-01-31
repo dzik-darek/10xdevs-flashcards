@@ -183,10 +183,7 @@ export async function getFlashcards(
   // ========================================================================
 
   // Start with base query - select all fields and enable count
-  let queryBuilder = supabase
-    .from("flashcards")
-    .select("*", { count: "exact" })
-    .eq("user_id", userId);
+  let queryBuilder = supabase.from("flashcards").select("*", { count: "exact" }).eq("user_id", userId);
 
   // ========================================================================
   // Step 2: Apply Mode Filter
@@ -321,11 +318,7 @@ export async function updateFlashcard(
  * @returns true if flashcard was deleted, false if not found or unauthorized
  * @throws Error if database delete fails
  */
-export async function deleteFlashcard(
-  supabase: SupabaseClientType,
-  id: string,
-  userId: string
-): Promise<boolean> {
+export async function deleteFlashcard(supabase: SupabaseClientType, id: string, userId: string): Promise<boolean> {
   // ========================================================================
   // Step 1: Delete Flashcard with Ownership Check
   // ========================================================================
@@ -366,10 +359,7 @@ export async function deleteFlashcard(
  * @returns Statistics with total and study counts
  * @throws Error if database query fails
  */
-export async function getStats(
-  supabase: SupabaseClientType,
-  userId: string
-): Promise<UserStatsDTO> {
+export async function getStats(supabase: SupabaseClientType, userId: string): Promise<UserStatsDTO> {
   // ========================================================================
   // Step 1: Execute Parallel Count Queries
   // ========================================================================
@@ -390,10 +380,7 @@ export async function getStats(
     .lte("due", now);
 
   // Execute both queries in parallel for efficiency
-  const [totalResult, studyResult] = await Promise.all([
-    totalCountPromise,
-    studyCountPromise,
-  ]);
+  const [totalResult, studyResult] = await Promise.all([totalCountPromise, studyCountPromise]);
 
   // Guard: Check for query errors
   if (totalResult.error) {

@@ -9,11 +9,7 @@ interface LogoutButtonProps {
   children?: React.ReactNode;
 }
 
-export function LogoutButton({
-  variant = "outline",
-  className,
-  children = "Wyloguj się",
-}: LogoutButtonProps) {
+export function LogoutButton({ variant = "outline", className, children = "Wyloguj się" }: LogoutButtonProps) {
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   const handleLogout = async () => {
@@ -43,12 +39,7 @@ export function LogoutButton({
   };
 
   return (
-    <Button
-      variant={variant}
-      onClick={handleLogout}
-      disabled={isLoggingOut}
-      className={className}
-    >
+    <Button variant={variant} onClick={handleLogout} disabled={isLoggingOut} className={className}>
       {isLoggingOut ? "Wylogowywanie..." : children}
     </Button>
   );

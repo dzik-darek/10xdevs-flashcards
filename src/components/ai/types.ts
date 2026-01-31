@@ -3,7 +3,7 @@
  * ViewModels and state management types for the flashcard generation flow
  */
 
-import type { FlashcardDraftDTO } from '@/types';
+import type { FlashcardDraftDTO } from "@/types";
 
 /**
  * ViewModel extends DTO with frontend-specific fields for React rendering
@@ -14,7 +14,7 @@ export interface DraftViewModel extends FlashcardDraftDTO {
    * UUID generated on frontend for React key prop
    */
   id: string;
-  
+
   /**
    * Optional flag for deletion animation
    */
@@ -27,7 +27,7 @@ export interface DraftViewModel extends FlashcardDraftDTO {
  * - loading: AI is generating flashcards
  * - review: User reviews and edits generated drafts
  */
-export type WizardStep = 'input' | 'loading' | 'review';
+export type WizardStep = "input" | "loading" | "review";
 
 /**
  * Complete state for the AI Generator Wizard
@@ -37,22 +37,22 @@ export interface GeneratorState {
    * Current step in the wizard flow
    */
   step: WizardStep;
-  
+
   /**
    * User's input note content
    */
   noteContent: string;
-  
+
   /**
    * Generated flashcard drafts (with frontend IDs)
    */
   drafts: DraftViewModel[];
-  
+
   /**
    * Flag indicating if batch save is in progress
    */
   isSaving: boolean;
-  
+
   /**
    * Error message to display (null if no error)
    */

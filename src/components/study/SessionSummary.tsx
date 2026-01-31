@@ -30,21 +30,13 @@ export function SessionSummary({ reviewedCards, wasEmpty = false }: SessionSumma
     <div className="w-full max-w-2xl mx-auto">
       <Card className="text-center">
         <CardHeader>
-          <div className="mx-auto mb-4 text-6xl">
-            {wasEmpty ? "📚" : "🎉"}
-          </div>
-          <CardTitle className="text-2xl">
-            {wasEmpty ? "Wszystko na dziś zrobione!" : "Świetna robota!"}
-          </CardTitle>
+          <div className="mx-auto mb-4 text-6xl">{wasEmpty ? "📚" : "🎉"}</div>
+          <CardTitle className="text-2xl">{wasEmpty ? "Wszystko na dziś zrobione!" : "Świetna robota!"}</CardTitle>
           <CardDescription className="text-base mt-2">
             {wasEmpty
               ? "Nie masz żadnych fiszek do powtórki. Wróć później lub utwórz nowe fiszki."
               : `Ukończyłeś sesję nauki. Przejrzałeś ${reviewedCards} ${
-                  reviewedCards === 1
-                    ? "fiszkę"
-                    : reviewedCards < 5
-                      ? "fiszki"
-                      : "fiszek"
+                  reviewedCards === 1 ? "fiszkę" : reviewedCards < 5 ? "fiszki" : "fiszek"
                 }.`}
           </CardDescription>
         </CardHeader>

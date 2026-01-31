@@ -3,44 +3,44 @@
  * Displays generated drafts in editable cards for review before saving
  */
 
-import { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { DraftCard } from './DraftCard';
-import type { DraftViewModel } from './types';
-import { VALIDATION_CONSTRAINTS } from '@/types';
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { DraftCard } from "./DraftCard";
+import type { DraftViewModel } from "./types";
+import { VALIDATION_CONSTRAINTS } from "@/types";
 
 interface ReviewStepProps {
   /**
    * Array of draft flashcards to review
    */
   drafts: DraftViewModel[];
-  
+
   /**
    * Callback to save valid drafts to database
    */
   onSave: () => Promise<void>;
-  
+
   /**
    * Callback to discard all drafts and start over
    */
   onDiscard: () => void;
-  
+
   /**
    * Callback when a draft is updated
    */
   onUpdateDraft: (id: string, data: Partial<DraftViewModel>) => void;
-  
+
   /**
    * Callback when a draft is deleted
    */
   onDeleteDraft: (id: string) => void;
-  
+
   /**
    * Whether save operation is in progress
    */
   isSaving?: boolean;
-  
+
   /**
    * Error message to display
    */
@@ -59,17 +59,14 @@ export function ReviewStep({
   const [saveSuccess, setSaveSuccess] = useState(false);
 
   // Validate all drafts
-  const validDrafts = drafts.filter(draft => {
+  const validDrafts = drafts.filter((draft) => {
     const { front: frontConstraints, back: backConstraints } = VALIDATION_CONSTRAINTS.flashcard;
-    
-    const isFrontValid = 
-      draft.front.trim().length >= frontConstraints.min && 
-      draft.front.length <= frontConstraints.max;
-    
-    const isBackValid = 
-      draft.back.trim().length >= backConstraints.min && 
-      draft.back.length <= backConstraints.max;
-    
+
+    const isFrontValid =
+      draft.front.trim().length >= frontConstraints.min && draft.front.length <= frontConstraints.max;
+
+    const isBackValid = draft.back.trim().length >= backConstraints.min && draft.back.length <= backConstraints.max;
+
     return isFrontValid && isBackValid;
   });
 
@@ -82,7 +79,9 @@ export function ReviewStep({
       setSaveSuccess(true);
     } catch (err) {
       // Error is handled by parent component
-      console.error('Save failed:', err);
+      if (err instanceof Error) {
+        throw err;
+      }
     }
   };
 
@@ -90,9 +89,7 @@ export function ReviewStep({
     return (
       <div className="w-full max-w-2xl mx-auto p-6 space-y-6 text-center">
         <Alert>
-          <AlertDescription>
-            Brak fiszek do wyświetlenia. Wszystkie zostały usunięte.
-          </AlertDescription>
+          <AlertDescription>Brak fiszek do wyświetlenia. Wszystkie zostały usunięte.</AlertDescription>
         </Alert>
         <Button onClick={onDiscard} variant="outline">
           Wróć do początku
@@ -106,12 +103,10 @@ export function ReviewStep({
       <div className="space-y-6">
         {/* Header */}
         <div className="space-y-2">
-          <h2 className="text-2xl font-bold tracking-tight">
-            Sprawdź wygenerowane fiszki
-          </h2>
+          <h2 className="text-2xl font-bold tracking-tight">Sprawdź wygenerowane fiszki</h2>
           <p className="text-muted-foreground">
-            Możesz edytować, usuwać lub zapisać fiszki poniżej. 
-            Wygenerowano {drafts.length} {drafts.length === 1 ? 'fiszkę' : 'fiszek'}.
+            Możesz edytować, usuwać lub zapisać fiszki poniżej. Wygenerowano {drafts.length}{" "}
+            {drafts.length === 1 ? "fiszkę" : "fiszek"}.
           </p>
         </div>
 
@@ -126,7 +121,7 @@ export function ReviewStep({
         {saveSuccess && (
           <Alert>
             <AlertDescription>
-              ✅ Zapisano {validDrafts.length} {validDrafts.length === 1 ? 'fiszkę' : 'fiszek'}!
+              ✅ Zapisano {validDrafts.length} {validDrafts.length === 1 ? "fiszkę" : "fiszek"}!
             </AlertDescription>
           </Alert>
         )}
@@ -135,8 +130,8 @@ export function ReviewStep({
         {hasInvalidDrafts && (
           <Alert variant="destructive">
             <AlertDescription>
-              ⚠️ Niektóre fiszki zawierają błędy. Popraw je lub usuń przed zapisaniem.
-              ({validDrafts.length}/{drafts.length} poprawnych)
+              ⚠️ Niektóre fiszki zawierają błędy. Popraw je lub usuń przed zapisaniem. ({validDrafts.length}/
+              {drafts.length} poprawnych)
             </AlertDescription>
           </Alert>
         )}
@@ -147,9 +142,7 @@ export function ReviewStep({
             <DraftCard
               key={draft.id}
               draft={draft}
-              onUpdate={(field, value) => 
-                onUpdateDraft(draft.id, { [field]: value })
-              }
+              onUpdate={(field, value) => onUpdateDraft(draft.id, { [field]: value })}
               onDelete={() => onDeleteDraft(draft.id)}
             />
           ))}
@@ -165,22 +158,14 @@ export function ReviewStep({
             </span>
             <span>poprawnych fiszek</span>
           </div>
-          
+
           <div className="flex gap-3">
-            <Button
-              onClick={onDiscard}
-              variant="outline"
-              disabled={isSaving}
-            >
+            <Button onClick={onDiscard} variant="outline" disabled={isSaving}>
               Odrzuć wszystkie
             </Button>
-            
-            <Button
-              onClick={handleSave}
-              disabled={!canSave}
-              size="lg"
-            >
-              {isSaving ? 'Zapisuję...' : `Zapisz fiszki (${validDrafts.length})`}
+
+            <Button onClick={handleSave} disabled={!canSave} size="lg">
+              {isSaving ? "Zapisuję..." : `Zapisz fiszki (${validDrafts.length})`}
             </Button>
           </div>
         </div>

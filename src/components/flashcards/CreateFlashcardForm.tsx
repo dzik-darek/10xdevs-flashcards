@@ -4,31 +4,17 @@ import { toast } from "sonner";
 import { z } from "zod";
 
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
 import type { ApiErrorResponse, CreateFlashcardDTO, FlashcardDTO } from "@/types";
 import { VALIDATION_CONSTRAINTS } from "@/types";
 
 // Form values type matching the schema
-type CreateFlashcardFormValues = {
+interface CreateFlashcardFormValues {
   front: string;
   back: string;
-};
+}
 
 // Zod validation schema
 const formSchema = z.object({
@@ -37,14 +23,14 @@ const formSchema = z.object({
     .min(VALIDATION_CONSTRAINTS.flashcard.front.min, "Treść pytania jest wymagana")
     .max(
       VALIDATION_CONSTRAINTS.flashcard.front.max,
-      `Przekroczono limit znaków (max ${VALIDATION_CONSTRAINTS.flashcard.front.max})`,
+      `Przekroczono limit znaków (max ${VALIDATION_CONSTRAINTS.flashcard.front.max})`
     ),
   back: z
     .string()
     .min(VALIDATION_CONSTRAINTS.flashcard.back.min, "Treść odpowiedzi jest wymagana")
     .max(
       VALIDATION_CONSTRAINTS.flashcard.back.max,
-      `Przekroczono limit znaków (max ${VALIDATION_CONSTRAINTS.flashcard.back.max})`,
+      `Przekroczono limit znaków (max ${VALIDATION_CONSTRAINTS.flashcard.back.max})`
     ),
 });
 
@@ -100,7 +86,11 @@ export function CreateFlashcardForm() {
   const onSave = async (values: CreateFlashcardFormValues) => {
     try {
       await createFlashcard(values);
-      window.location.href = "/flashcards";
+
+      if (typeof window !== "undefined") {
+        // eslint-disable-next-line react-compiler/react-compiler
+        window.location.href = "/flashcards";
+      }
     } catch (error) {
       if (error instanceof Error) {
         toast.error(error.message);
@@ -134,16 +124,16 @@ export function CreateFlashcardForm() {
 
   // Handle cancel - redirect back to list
   const onCancel = () => {
-    window.location.href = "/flashcards";
+    if (typeof window !== "undefined") {
+      window.location.href = "/flashcards";
+    }
   };
 
   return (
     <Card className="mx-auto max-w-2xl">
       <CardHeader>
         <CardTitle>Dodaj nową fiszkę</CardTitle>
-        <CardDescription>
-          Wprowadź treść pytania i odpowiedzi dla swojej fiszki
-        </CardDescription>
+        <CardDescription>Wprowadź treść pytania i odpowiedzi dla swojej fiszki</CardDescription>
       </CardHeader>
 
       <Form {...form}>
@@ -157,12 +147,7 @@ export function CreateFlashcardForm() {
                 <FormItem>
                   <FormLabel>Przód (Pytanie)</FormLabel>
                   <FormControl>
-                    <Textarea
-                      placeholder="Wprowadź pytanie..."
-                      className="resize-none"
-                      rows={4}
-                      {...field}
-                    />
+                    <Textarea placeholder="Wprowadź pytanie..." className="resize-none" rows={4} {...field} />
                   </FormControl>
                   <div className="flex items-center justify-between">
                     <FormMessage />
@@ -188,12 +173,7 @@ export function CreateFlashcardForm() {
                 <FormItem>
                   <FormLabel>Tył (Odpowiedź)</FormLabel>
                   <FormControl>
-                    <Textarea
-                      placeholder="Wprowadź odpowiedź..."
-                      className="resize-none"
-                      rows={6}
-                      {...field}
-                    />
+                    <Textarea placeholder="Wprowadź odpowiedź..." className="resize-none" rows={6} {...field} />
                   </FormControl>
                   <div className="flex items-center justify-between">
                     <FormMessage />

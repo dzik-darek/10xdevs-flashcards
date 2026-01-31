@@ -11,8 +11,8 @@
 import { useState, useEffect, useCallback } from "react";
 import { toast } from "sonner";
 
-import type { FlashcardDTO, Rating, CreateReviewDTO, GetFlashcardsResponseDTO } from "@/types";
-import type { StudyState, StudySessionStatus } from "@/components/study/types";
+import type { Rating, CreateReviewDTO, GetFlashcardsResponseDTO } from "@/types";
+import type { StudyState } from "@/components/study/types";
 
 /**
  * Hook for managing study session
@@ -70,7 +70,9 @@ export function useStudySession() {
       });
       setStartTime(Date.now());
     } catch (error) {
-      console.error("Error fetching study queue:", error);
+      if (error instanceof Error) {
+        toast.error("Nie udało się pobrać fiszek do nauki");
+      }
       setState((prev) => ({
         ...prev,
         status: "error",
@@ -168,8 +170,9 @@ export function useStudySession() {
         }
       } catch (error) {
         // Error handling: Show toast but don't block UI
-        console.error("Error submitting review:", error);
-        toast.error("Nie udało się zapisać oceny fiszki");
+        if (error instanceof Error) {
+          toast.error("Nie udało się zapisać oceny fiszki");
+        }
       }
     },
     [state, startTime]

@@ -3,21 +3,21 @@
  * Handles state persistence, API integration, and business logic
  */
 
-import { useState, useEffect, useCallback } from 'react';
-import type { GeneratorState, DraftViewModel, WizardStep } from '@/components/ai/types';
-import type { 
-  GenerateFlashcardsDTO, 
+import { useState, useEffect, useCallback } from "react";
+import type { GeneratorState, DraftViewModel } from "@/components/ai/types";
+import type {
+  GenerateFlashcardsDTO,
   GenerateFlashcardsResponseDTO,
   BatchCreateFlashcardsDTO,
   BatchCreateFlashcardsResponseDTO,
-  CreateFlashcardDTO
-} from '@/types';
+  CreateFlashcardDTO,
+} from "@/types";
 
-const SESSION_STORAGE_KEY = 'ai-generator-state';
+const SESSION_STORAGE_KEY = "ai-generator-state";
 
 const DEFAULT_STATE: GeneratorState = {
-  step: 'input',
-  noteContent: '',
+  step: "input",
+  noteContent: "",
   drafts: [],
   isSaving: false,
   error: null,
@@ -27,16 +27,18 @@ const DEFAULT_STATE: GeneratorState = {
  * Loads state from sessionStorage if available
  */
 function loadStateFromStorage(): GeneratorState {
-  if (typeof window === 'undefined') return DEFAULT_STATE;
-  
+  if (typeof window === "undefined") return DEFAULT_STATE;
+
   try {
     const stored = sessionStorage.getItem(SESSION_STORAGE_KEY);
     if (!stored) return DEFAULT_STATE;
-    
+
     const parsed = JSON.parse(stored) as GeneratorState;
     return parsed;
   } catch (error) {
-    console.error('Failed to load state from sessionStorage:', error);
+    if (error instanceof Error) {
+      throw error;
+    }
     return DEFAULT_STATE;
   }
 }
@@ -45,12 +47,14 @@ function loadStateFromStorage(): GeneratorState {
  * Saves state to sessionStorage
  */
 function saveStateToStorage(state: GeneratorState): void {
-  if (typeof window === 'undefined') return;
-  
+  if (typeof window === "undefined") return;
+
   try {
     sessionStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(state));
   } catch (error) {
-    console.error('Failed to save state to sessionStorage:', error);
+    if (error instanceof Error) {
+      throw error;
+    }
   }
 }
 
@@ -58,12 +62,14 @@ function saveStateToStorage(state: GeneratorState): void {
  * Clears state from sessionStorage
  */
 function clearStateFromStorage(): void {
-  if (typeof window === 'undefined') return;
-  
+  if (typeof window === "undefined") return;
+
   try {
     sessionStorage.removeItem(SESSION_STORAGE_KEY);
   } catch (error) {
-    console.error('Failed to clear state from sessionStorage:', error);
+    if (error instanceof Error) {
+      throw error;
+    }
   }
 }
 
@@ -82,13 +88,13 @@ export function useGeneratorState() {
 
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
       e.preventDefault();
-      e.returnValue = '';
+      e.returnValue = "";
     };
 
-    window.addEventListener('beforeunload', handleBeforeUnload);
+    window.addEventListener("beforeunload", handleBeforeUnload);
 
     return () => {
-      window.removeEventListener('beforeunload', handleBeforeUnload);
+      window.removeEventListener("beforeunload", handleBeforeUnload);
     };
   }, [state.drafts.length, state.isSaving]);
 
@@ -96,7 +102,7 @@ export function useGeneratorState() {
    * Updates note content
    */
   const setNoteContent = useCallback((content: string) => {
-    setState(prev => ({
+    setState((prev) => ({
       ...prev,
       noteContent: content,
       error: null,
@@ -109,17 +115,17 @@ export function useGeneratorState() {
    */
   const generateDrafts = useCallback(async () => {
     if (state.noteContent.length < 10) {
-      setState(prev => ({ 
-        ...prev, 
-        error: 'Tekst jest zbyt krótki. Minimum 10 znaków.' 
+      setState((prev) => ({
+        ...prev,
+        error: "Tekst jest zbyt krótki. Minimum 10 znaków.",
       }));
       return;
     }
 
-    setState(prev => ({ 
-      ...prev, 
-      step: 'loading',
-      error: null 
+    setState((prev) => ({
+      ...prev,
+      step: "loading",
+      error: null,
     }));
 
     try {
@@ -127,10 +133,10 @@ export function useGeneratorState() {
         note_content: state.noteContent,
       };
 
-      const response = await fetch('/api/ai/generate', {
-        method: 'POST',
+      const response = await fetch("/api/ai/generate", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(requestBody),
         signal: AbortSignal.timeout(120000), // 120s timeout
@@ -139,36 +145,35 @@ export function useGeneratorState() {
       if (!response.ok) {
         if (response.status === 422) {
           const errorData = await response.json();
-          throw new Error(errorData.error || 'Tekst jest nieprawidłowy');
+          throw new Error(errorData.error || "Tekst jest nieprawidłowy");
         }
         if (response.status === 504) {
-          throw new Error('Generowanie trwało zbyt długo. Spróbuj z krótszym fragmentem tekstu.');
+          throw new Error("Generowanie trwało zbyt długo. Spróbuj z krótszym fragmentem tekstu.");
         }
-        throw new Error('Wystąpił błąd podczas generowania. Spróbuj ponownie.');
+        throw new Error("Wystąpił błąd podczas generowania. Spróbuj ponownie.");
       }
 
       const data: GenerateFlashcardsResponseDTO = await response.json();
 
       // Map drafts to ViewModels with frontend IDs
-      const draftsWithIds: DraftViewModel[] = data.drafts.map(draft => ({
+      const draftsWithIds: DraftViewModel[] = data.drafts.map((draft) => ({
         ...draft,
         id: crypto.randomUUID(),
       }));
 
-      setState(prev => ({
+      setState((prev) => ({
         ...prev,
-        step: 'review',
+        step: "review",
         drafts: draftsWithIds,
         error: null,
       }));
     } catch (error) {
-      const errorMessage = error instanceof Error 
-        ? error.message 
-        : 'Wystąpił błąd podczas generowania. Spróbuj ponownie.';
-      
-      setState(prev => ({
+      const errorMessage =
+        error instanceof Error ? error.message : "Wystąpił błąd podczas generowania. Spróbuj ponownie.";
+
+      setState((prev) => ({
         ...prev,
-        step: 'input',
+        step: "input",
         error: errorMessage,
       }));
     }
@@ -178,11 +183,9 @@ export function useGeneratorState() {
    * Updates a specific draft by ID
    */
   const updateDraft = useCallback((id: string, changes: Partial<DraftViewModel>) => {
-    setState(prev => ({
+    setState((prev) => ({
       ...prev,
-      drafts: prev.drafts.map(draft =>
-        draft.id === id ? { ...draft, ...changes } : draft
-      ),
+      drafts: prev.drafts.map((draft) => (draft.id === id ? { ...draft, ...changes } : draft)),
     }));
   }, []);
 
@@ -190,9 +193,9 @@ export function useGeneratorState() {
    * Removes a draft by ID
    */
   const removeDraft = useCallback((id: string) => {
-    setState(prev => ({
+    setState((prev) => ({
       ...prev,
-      drafts: prev.drafts.filter(draft => draft.id !== id),
+      drafts: prev.drafts.filter((draft) => draft.id !== id),
     }));
   }, []);
 
@@ -202,26 +205,27 @@ export function useGeneratorState() {
    */
   const saveBatch = useCallback(async () => {
     // Filter out invalid drafts
-    const validDrafts = state.drafts.filter(draft => 
-      draft.front.trim().length > 0 && 
-      draft.front.length <= 500 &&
-      draft.back.trim().length > 0 && 
-      draft.back.length <= 1000
+    const validDrafts = state.drafts.filter(
+      (draft) =>
+        draft.front.trim().length > 0 &&
+        draft.front.length <= 500 &&
+        draft.back.trim().length > 0 &&
+        draft.back.length <= 1000
     );
 
     if (validDrafts.length === 0) {
-      setState(prev => ({ 
-        ...prev, 
-        error: 'Brak poprawnych fiszek do zapisania' 
+      setState((prev) => ({
+        ...prev,
+        error: "Brak poprawnych fiszek do zapisania",
       }));
       return;
     }
 
-    setState(prev => ({ ...prev, isSaving: true, error: null }));
+    setState((prev) => ({ ...prev, isSaving: true, error: null }));
 
     try {
       // Map to CreateFlashcardDTO
-      const cards: CreateFlashcardDTO[] = validDrafts.map(draft => ({
+      const cards: CreateFlashcardDTO[] = validDrafts.map((draft) => ({
         front: draft.front,
         back: draft.back,
         is_ai_generated: true,
@@ -229,17 +233,17 @@ export function useGeneratorState() {
 
       const requestBody: BatchCreateFlashcardsDTO = { cards };
 
-      const response = await fetch('/api/flashcards/batch', {
-        method: 'POST',
+      const response = await fetch("/api/flashcards/batch", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(requestBody),
       });
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.error || 'Wystąpił błąd podczas zapisywania');
+        throw new Error(errorData.error || "Wystąpił błąd podczas zapisywania");
       }
 
       const data: BatchCreateFlashcardsResponseDTO = await response.json();
@@ -250,11 +254,10 @@ export function useGeneratorState() {
 
       return data.ids;
     } catch (error) {
-      const errorMessage = error instanceof Error 
-        ? error.message 
-        : 'Wystąpił błąd podczas zapisywania. Spróbuj ponownie.';
-      
-      setState(prev => ({
+      const errorMessage =
+        error instanceof Error ? error.message : "Wystąpił błąd podczas zapisywania. Spróbuj ponownie.";
+
+      setState((prev) => ({
         ...prev,
         isSaving: false,
         error: errorMessage,

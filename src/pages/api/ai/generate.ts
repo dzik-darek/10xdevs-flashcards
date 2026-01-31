@@ -16,7 +16,6 @@ import { z } from "zod";
 import type { GenerateFlashcardsDTO, GenerateFlashcardsResponseDTO, ApiErrorResponse } from "../../../types";
 import { VALIDATION_CONSTRAINTS } from "../../../types";
 import { generateFlashcards } from "../../../lib/services/ai.service";
-import { DEFAULT_USER_ID } from "../../../db/supabase.client";
 
 // ============================================================================
 // Configuration
@@ -52,7 +51,7 @@ const GenerateFlashcardsSchema = z.object({
 /**
  * POST handler for flashcard generation
  */
-export const POST: APIRoute = async ({ request, locals }) => {
+export const POST: APIRoute = async ({ request }) => {
   try {
     // ========================================================================
     // Step 1: Authentication Check
@@ -61,7 +60,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
     // DEV MODE: Using hardcoded user ID for development/testing
     // TODO: Uncomment the real authentication code below when auth is implemented
     // Note: userId is not used in this endpoint (no DB writes), but kept for consistency
-    const userId = DEFAULT_USER_ID;
+    // const userId = DEFAULT_USER_ID;
 
     // PRODUCTION CODE (currently commented out):
     // const supabase = locals.supabase;

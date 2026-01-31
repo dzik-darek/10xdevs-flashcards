@@ -4,7 +4,7 @@ import { DashboardPage } from "../pages/DashboardPage";
 
 /**
  * E2E Tests for Login Flow (US-002)
- * 
+ *
  * User Story: Logowanie do systemu
  * - Użytkownik może wprowadzić email i hasło
  * - Błędne dane logowania skutkują komunikatem "Nieprawidłowy email lub hasło"
@@ -90,7 +90,7 @@ test.describe("Login Flow", () => {
 
     // Verify dashboard is visible and functional
     expect(await dashboardPage.isVisible()).toBe(true);
-    
+
     // Verify greeting contains user email or name
     const greeting = await dashboardPage.getGreeting();
     expect(greeting).toBeTruthy();
@@ -106,15 +106,18 @@ test.describe("Login Flow", () => {
     }
 
     // Fill form
-    await loginPage.fillEmail(testEmail!);
-    await loginPage.fillPassword(testPassword!);
+    if (!testEmail || !testPassword) {
+      throw new Error("Test credentials not available");
+    }
+    await loginPage.fillEmail(testEmail);
+    await loginPage.fillPassword(testPassword);
 
     // Click submit and immediately check if button is disabled
     const submitPromise = loginPage.submit();
-    
+
     // Button should show loading state
     await expect(loginPage.submitButton).toHaveText(/Logowanie\.\.\./);
-    
+
     await submitPromise;
   });
 

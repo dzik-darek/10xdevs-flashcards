@@ -165,7 +165,9 @@ export async function submitReview(
     // Log insertion failure should not block the main operation
     // The card update succeeded, so we return the updated card
     // but we should log this error for monitoring
-    console.error("Failed to insert review log:", logError);
+    if (logError instanceof Error) {
+      throw logError;
+    }
     // In production, you might want to:
     // - Send to error tracking service (Sentry, etc.)
     // - Retry the insert

@@ -212,7 +212,9 @@ export const PATCH: APIRoute = async ({ params, request, locals }) => {
     // Error Handling: Unexpected Errors
     // ========================================================================
 
-    console.error("Error updating flashcard:", error);
+    if (error instanceof Error) {
+      throw error;
+    }
 
     const errorResponse: ApiErrorResponse = {
       error: "An unexpected error occurred while updating the flashcard",
@@ -328,7 +330,9 @@ export const DELETE: APIRoute = async ({ params, locals }) => {
     // Error Handling: Unexpected Errors
     // ========================================================================
 
-    console.error("Error deleting flashcard:", error);
+    if (error instanceof Error) {
+      throw error;
+    }
 
     const errorResponse: ApiErrorResponse = {
       error: "An unexpected error occurred while deleting the flashcard",

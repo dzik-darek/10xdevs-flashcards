@@ -68,27 +68,26 @@ function isActive(href: string): boolean {
   if (href === "/dashboard") {
     return currentPath === "/dashboard" || currentPath === "/";
   }
-  
+
   // For exact match routes (like /flashcards/new, /ai/generate, /settings, /study)
   // we want exact matching to prevent parent paths from being active
   if (href === "/flashcards/new" || href === "/ai/generate" || href === "/settings" || href === "/study") {
     return currentPath === href;
   }
-  
+
   // For base paths like /flashcards, use startsWith but ensure it's not a more specific route
   if (href === "/flashcards") {
-    return currentPath === "/flashcards" || (currentPath.startsWith("/flashcards/") && currentPath !== "/flashcards/new");
+    return (
+      currentPath === "/flashcards" || (currentPath.startsWith("/flashcards/") && currentPath !== "/flashcards/new")
+    );
   }
-  
+
   // Default: exact match
   return currentPath === href;
 }
 ---
 
-<aside
-  class="flex h-screen w-64 flex-col border-r bg-background"
-  aria-label="Główna nawigacja"
->
+<aside class="flex h-screen w-64 flex-col border-r bg-background" aria-label="Główna nawigacja">
   <!-- Logo / Brand Section -->
   <div class="flex h-16 items-center border-b px-6">
     <a href="/dashboard" class="flex items-center gap-2">

@@ -11,9 +11,7 @@ const user = Astro.locals.user;
   <div class="container mx-auto max-w-4xl space-y-8 py-8">
     <div class="space-y-2">
       <h1 class="text-3xl font-bold tracking-tight">Ustawienia</h1>
-      <p class="text-muted-foreground">
-        Zarządzaj swoim kontem i preferencjami aplikacji
-      </p>
+      <p class="text-muted-foreground">Zarządzaj swoim kontem i preferencjami aplikacji</p>
     </div>
 
     <div class="space-y-6">
@@ -21,18 +19,14 @@ const user = Astro.locals.user;
       <Card>
         <CardHeader>
           <CardTitle>Informacje o koncie</CardTitle>
-          <CardDescription>
-            Przeglądaj i edytuj informacje związane z Twoim kontem
-          </CardDescription>
+          <CardDescription> Przeglądaj i edytuj informacje związane z Twoim kontem </CardDescription>
         </CardHeader>
         <CardContent>
           <div class="space-y-4">
             <div>
               <p class="text-sm font-medium text-muted-foreground">Email</p>
               <p class="text-base">{user?.email || "Nie zalogowano"}</p>
-              <p class="text-xs text-muted-foreground mt-1">
-                Funkcja zmiany adresu email będzie dostępna wkrótce
-              </p>
+              <p class="text-xs text-muted-foreground mt-1">Funkcja zmiany adresu email będzie dostępna wkrótce</p>
             </div>
           </div>
         </CardContent>

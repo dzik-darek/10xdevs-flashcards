@@ -3,7 +3,7 @@
  * Confirmation dialog for deleting a flashcard
  */
 
-import { useState } from 'react';
+import { useState } from "react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -13,8 +13,8 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
-import type { FlashcardDTO } from '@/types';
+} from "@/components/ui/alert-dialog";
+import type { FlashcardDTO } from "@/types";
 
 interface DeleteFlashcardAlertProps {
   open: boolean;
@@ -23,12 +23,7 @@ interface DeleteFlashcardAlertProps {
   onConfirm: (id: string) => Promise<void>;
 }
 
-export function DeleteFlashcardAlert({
-  open,
-  onOpenChange,
-  flashcard,
-  onConfirm,
-}: DeleteFlashcardAlertProps) {
+export function DeleteFlashcardAlert({ open, onOpenChange, flashcard, onConfirm }: DeleteFlashcardAlertProps) {
   const [isDeleting, setIsDeleting] = useState(false);
 
   const handleConfirm = async () => {
@@ -40,7 +35,9 @@ export function DeleteFlashcardAlert({
       onOpenChange(false);
     } catch (error) {
       // Error is handled by parent component (toast)
-      console.error('Delete error:', error);
+      if (error instanceof Error) {
+        throw error;
+      }
     } finally {
       setIsDeleting(false);
     }
@@ -52,8 +49,7 @@ export function DeleteFlashcardAlert({
         <AlertDialogHeader>
           <AlertDialogTitle>Czy na pewno chcesz usunąć tę fiszkę?</AlertDialogTitle>
           <AlertDialogDescription>
-            Ta operacja jest nieodwracalna. Fiszka zostanie trwale usunięta z twojej bazy
-            wiedzy.
+            Ta operacja jest nieodwracalna. Fiszka zostanie trwale usunięta z twojej bazy wiedzy.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
@@ -63,7 +59,7 @@ export function DeleteFlashcardAlert({
             disabled={isDeleting}
             className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
           >
-            {isDeleting ? 'Usuwanie...' : 'Usuń'}
+            {isDeleting ? "Usuwanie..." : "Usuń"}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

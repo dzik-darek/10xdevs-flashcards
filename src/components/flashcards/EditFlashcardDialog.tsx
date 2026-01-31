@@ -3,7 +3,7 @@
  * Modal dialog for editing flashcard content
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 import {
   Dialog,
   DialogContent,
@@ -11,12 +11,12 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import type { FlashcardDTO, UpdateFlashcardDTO } from '@/types';
-import { VALIDATION_CONSTRAINTS } from '@/types';
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import type { FlashcardDTO, UpdateFlashcardDTO } from "@/types";
+import { VALIDATION_CONSTRAINTS } from "@/types";
 
 interface EditFlashcardDialogProps {
   open: boolean;
@@ -30,14 +30,9 @@ interface ValidationErrors {
   back?: string;
 }
 
-export function EditFlashcardDialog({
-  open,
-  onOpenChange,
-  flashcard,
-  onSubmit,
-}: EditFlashcardDialogProps) {
-  const [front, setFront] = useState('');
-  const [back, setBack] = useState('');
+export function EditFlashcardDialog({ open, onOpenChange, flashcard, onSubmit }: EditFlashcardDialogProps) {
+  const [front, setFront] = useState("");
+  const [back, setBack] = useState("");
   const [errors, setErrors] = useState<ValidationErrors>({});
   const [isSaving, setIsSaving] = useState(false);
 
@@ -54,7 +49,7 @@ export function EditFlashcardDialog({
   const validateFront = (value: string): string | undefined => {
     const trimmed = value.trim();
     if (trimmed.length < VALIDATION_CONSTRAINTS.flashcard.front.min) {
-      return 'Pole wymagane';
+      return "Pole wymagane";
     }
     if (value.length > VALIDATION_CONSTRAINTS.flashcard.front.max) {
       return `Maksymalnie ${VALIDATION_CONSTRAINTS.flashcard.front.max} znaków`;
@@ -66,7 +61,7 @@ export function EditFlashcardDialog({
   const validateBack = (value: string): string | undefined => {
     const trimmed = value.trim();
     if (trimmed.length < VALIDATION_CONSTRAINTS.flashcard.back.min) {
-      return 'Pole wymagane';
+      return "Pole wymagane";
     }
     if (value.length > VALIDATION_CONSTRAINTS.flashcard.back.max) {
       return `Maksymalnie ${VALIDATION_CONSTRAINTS.flashcard.back.max} znaków`;
@@ -91,7 +86,7 @@ export function EditFlashcardDialog({
   const handleFrontChange = (value: string) => {
     setFront(value);
     if (errors.front) {
-      setErrors(prev => ({ ...prev, front: validateFront(value) }));
+      setErrors((prev) => ({ ...prev, front: validateFront(value) }));
     }
   };
 
@@ -99,7 +94,7 @@ export function EditFlashcardDialog({
   const handleBackChange = (value: string) => {
     setBack(value);
     if (errors.back) {
-      setErrors(prev => ({ ...prev, back: validateBack(value) }));
+      setErrors((prev) => ({ ...prev, back: validateBack(value) }));
     }
   };
 
@@ -125,7 +120,9 @@ export function EditFlashcardDialog({
       onOpenChange(false);
     } catch (error) {
       // Error is handled by parent component (toast)
-      console.error('Update error:', error);
+      if (error instanceof Error) {
+        throw error;
+      }
     } finally {
       setIsSaving(false);
     }
@@ -137,9 +134,7 @@ export function EditFlashcardDialog({
         <form onSubmit={handleSubmit}>
           <DialogHeader>
             <DialogTitle>Edytuj fiszkę</DialogTitle>
-            <DialogDescription>
-              Wprowadź zmiany w treści fiszki. Kliknij zapisz, aby zachować zmiany.
-            </DialogDescription>
+            <DialogDescription>Wprowadź zmiany w treści fiszki. Kliknij zapisz, aby zachować zmiany.</DialogDescription>
           </DialogHeader>
 
           <div className="grid gap-4 py-4">
@@ -151,18 +146,14 @@ export function EditFlashcardDialog({
               <Textarea
                 id="front"
                 value={front}
-                onChange={e => handleFrontChange(e.target.value)}
+                onChange={(e) => handleFrontChange(e.target.value)}
                 placeholder="Wpisz pytanie..."
                 rows={3}
                 disabled={isSaving}
-                className={errors.front ? 'border-destructive' : ''}
+                className={errors.front ? "border-destructive" : ""}
               />
               <div className="flex items-center justify-between">
-                {errors.front ? (
-                  <p className="text-sm text-destructive">{errors.front}</p>
-                ) : (
-                  <div />
-                )}
+                {errors.front ? <p className="text-sm text-destructive">{errors.front}</p> : <div />}
                 <p className="text-sm text-muted-foreground">
                   {front.length}/{VALIDATION_CONSTRAINTS.flashcard.front.max}
                 </p>
@@ -177,18 +168,14 @@ export function EditFlashcardDialog({
               <Textarea
                 id="back"
                 value={back}
-                onChange={e => handleBackChange(e.target.value)}
+                onChange={(e) => handleBackChange(e.target.value)}
                 placeholder="Wpisz odpowiedź..."
                 rows={5}
                 disabled={isSaving}
-                className={errors.back ? 'border-destructive' : ''}
+                className={errors.back ? "border-destructive" : ""}
               />
               <div className="flex items-center justify-between">
-                {errors.back ? (
-                  <p className="text-sm text-destructive">{errors.back}</p>
-                ) : (
-                  <div />
-                )}
+                {errors.back ? <p className="text-sm text-destructive">{errors.back}</p> : <div />}
                 <p className="text-sm text-muted-foreground">
                   {back.length}/{VALIDATION_CONSTRAINTS.flashcard.back.max}
                 </p>
@@ -197,16 +184,11 @@ export function EditFlashcardDialog({
           </div>
 
           <DialogFooter>
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => onOpenChange(false)}
-              disabled={isSaving}
-            >
+            <Button type="button" variant="outline" onClick={() => onOpenChange(false)} disabled={isSaving}>
               Anuluj
             </Button>
             <Button type="submit" disabled={isSaving}>
-              {isSaving ? 'Zapisywanie...' : 'Zapisz'}
+              {isSaving ? "Zapisywanie..." : "Zapisz"}
             </Button>
           </DialogFooter>
         </form>

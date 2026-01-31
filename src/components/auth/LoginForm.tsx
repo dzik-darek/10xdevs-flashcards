@@ -5,22 +5,8 @@ import { toast } from "sonner";
 
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 
 import { loginSchema, type LoginFormValues } from "./schemas";
@@ -60,7 +46,11 @@ export function LoginForm() {
 
       // Success - redirect to dashboard
       toast.success("Zalogowano pomyślnie!");
-      window.location.href = "/dashboard";
+
+      if (typeof window !== "undefined") {
+        // eslint-disable-next-line react-compiler/react-compiler
+        window.location.href = "/dashboard";
+      }
     } catch (error) {
       if (error instanceof Error) {
         setServerError(error.message);
@@ -74,9 +64,7 @@ export function LoginForm() {
     <Card className="mx-auto w-full max-w-md" data-testid="login-form-card">
       <CardHeader>
         <CardTitle className="text-2xl">Logowanie</CardTitle>
-        <CardDescription>
-          Wprowadź swoje dane, aby uzyskać dostęp do aplikacji
-        </CardDescription>
+        <CardDescription>Wprowadź swoje dane, aby uzyskać dostęp do aplikacji</CardDescription>
       </CardHeader>
 
       <Form {...form}>
@@ -132,19 +120,14 @@ export function LoginForm() {
           </CardContent>
 
           <CardFooter className="flex flex-col gap-4">
-            <Button 
-              type="submit" 
-              className="w-full" 
-              disabled={isSubmitting}
-              data-testid="login-submit-button"
-            >
+            <Button type="submit" className="w-full" disabled={isSubmitting} data-testid="login-submit-button">
               {isSubmitting ? "Logowanie..." : "Zaloguj się"}
             </Button>
 
             <div className="text-center text-sm text-muted-foreground">
               Nie masz konta?{" "}
-              <a 
-                href="/register" 
+              <a
+                href="/register"
                 className="text-primary underline-offset-4 hover:underline"
                 data-testid="register-link"
               >
