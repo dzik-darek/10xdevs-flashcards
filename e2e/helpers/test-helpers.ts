@@ -33,11 +33,7 @@ export async function clearPageStorage(page: Page): Promise<void> {
 /**
  * Take a screenshot with descriptive name
  */
-export async function takeScreenshot(
-  page: Page,
-  name: string,
-  options?: { fullPage?: boolean }
-): Promise<void> {
+export async function takeScreenshot(page: Page, name: string, options?: { fullPage?: boolean }): Promise<void> {
   await page.screenshot({
     path: `e2e/screenshots/${name}-${Date.now()}.png`,
     fullPage: options?.fullPage ?? false,
@@ -47,11 +43,7 @@ export async function takeScreenshot(
 /**
  * Wait for element to be visible and stable (not animating)
  */
-export async function waitForStableElement(
-  page: Page,
-  selector: string,
-  timeout = 5000
-): Promise<void> {
+export async function waitForStableElement(page: Page, selector: string, timeout = 5000): Promise<void> {
   const element = page.locator(selector);
   await element.waitFor({ state: "visible", timeout });
   // Wait a bit for animations to settle
@@ -87,19 +79,15 @@ export function getEnvVar(name: string, fallback?: string): string {
   if (!value && !fallback) {
     throw new Error(`Environment variable ${name} is not set`);
   }
-  return value || fallback!;
+  return value || fallback || "";
 }
 
 /**
  * Retry function with exponential backoff
  */
-export async function retryWithBackoff<T>(
-  fn: () => Promise<T>,
-  maxRetries = 3,
-  initialDelay = 1000
-): Promise<T> {
+export async function retryWithBackoff<T>(fn: () => Promise<T>, maxRetries = 3, initialDelay = 1000): Promise<T> {
   let lastError: Error | unknown;
-  
+
   for (let i = 0; i < maxRetries; i++) {
     try {
       return await fn();
@@ -107,10 +95,10 @@ export async function retryWithBackoff<T>(
       lastError = error;
       if (i < maxRetries - 1) {
         const delay = initialDelay * Math.pow(2, i);
-        await new Promise(resolve => setTimeout(resolve, delay));
+        await new Promise((resolve) => setTimeout(resolve, delay));
       }
     }
   }
-  
+
   throw lastError;
 }

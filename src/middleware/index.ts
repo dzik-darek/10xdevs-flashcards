@@ -3,12 +3,7 @@ import { defineMiddleware } from "astro:middleware";
 import { createSupabaseServerInstance } from "@/db/supabase.client";
 
 // Public paths that don't require authentication
-const PUBLIC_PATHS = [
-  "/login",
-  "/register",
-  "/api/auth/login",
-  "/api/auth/register",
-];
+const PUBLIC_PATHS = ["/login", "/register", "/api/auth/login", "/api/auth/register"];
 
 export const onRequest = defineMiddleware(async ({ locals, cookies, url, request, redirect }, next) => {
   // Create Supabase instance for this request
@@ -28,13 +23,14 @@ export const onRequest = defineMiddleware(async ({ locals, cookies, url, request
   // Set user in locals
   if (user) {
     // Fetch user profile data (first_name, surname)
-    let { data: profile, error: profileError } = await supabase
+    const { data: profile, error: profileError } = await supabase
       .from("profiles")
       .select("first_name, surname")
       .eq("id", user.id)
       .maybeSingle(); // Use maybeSingle() to handle missing profiles gracefully
 
     // If profile doesn't exist (for old users), create a default one
+    let profileData = profile;
     if (!profile && !profileError) {
       const { data: newProfile } = await supabase
         .from("profiles")
@@ -45,20 +41,22 @@ export const onRequest = defineMiddleware(async ({ locals, cookies, url, request
         })
         .select("first_name, surname")
         .single();
-      
-      profile = newProfile;
+
+      profileData = newProfile;
     }
 
     // Log profile fetch errors for debugging
     if (profileError) {
-      console.error("Error fetching user profile:", profileError);
+      if (profileError instanceof Error) {
+        throw profileError;
+      }
     }
 
     locals.user = {
       id: user.id,
       email: user.email,
-      firstName: profile?.first_name || null,
-      surname: profile?.surname || null,
+      firstName: profileData?.first_name || null,
+      surname: profileData?.surname || null,
     };
   } else {
     locals.user = null;

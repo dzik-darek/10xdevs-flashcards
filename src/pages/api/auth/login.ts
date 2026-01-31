@@ -28,14 +28,12 @@ export const POST: APIRoute = async ({ request, cookies }) => {
     if (error) {
       return new Response(
         JSON.stringify({
-          error: error.message === "Invalid login credentials"
-            ? "Nieprawidłowy email lub hasło"
-            : error.message,
+          error: error.message === "Invalid login credentials" ? "Nieprawidłowy email lub hasło" : error.message,
         }),
         {
           status: 400,
           headers: { "Content-Type": "application/json" },
-        },
+        }
       );
     }
 
@@ -49,7 +47,7 @@ export const POST: APIRoute = async ({ request, cookies }) => {
       {
         status: 200,
         headers: { "Content-Type": "application/json" },
-      },
+      }
     );
   } catch (error) {
     if (error instanceof z.ZodError) {
@@ -61,7 +59,7 @@ export const POST: APIRoute = async ({ request, cookies }) => {
         {
           status: 422,
           headers: { "Content-Type": "application/json" },
-        },
+        }
       );
     }
 
@@ -72,7 +70,7 @@ export const POST: APIRoute = async ({ request, cookies }) => {
       {
         status: 500,
         headers: { "Content-Type": "application/json" },
-      },
+      }
     );
   }
 };

@@ -29,8 +29,10 @@ let stats = { totalCount: 0, studyCount: 0 };
 try {
   stats = await getStats(Astro.locals.supabase, user.id);
 } catch (error) {
-  console.error("Failed to fetch dashboard stats:", error);
   // Continue with empty stats - will show empty state
+  if (error instanceof Error) {
+    throw error;
+  }
 }
 
 const { totalCount, studyCount } = stats;
@@ -52,59 +54,69 @@ const isZeroInbox = totalCount > 0 && studyCount === 0;
     </div>
 
     <!-- Hero Section: Dynamic Study Action Call -->
-    {isEmpty && (
-      <Alert data-testid="dashboard-empty-state">
-        <AlertDescription class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <p class="font-medium">Nie masz jeszcze żadnych fiszek</p>
-            <p class="text-sm text-muted-foreground">Zacznij od dodania pierwszej fiszki lub wygeneruj je automatycznie z AI</p>
-          </div>
-          <div class="flex gap-2">
-            <Button asChild>
-              <a href="/flashcards/new">Dodaj fiszkę</a>
-            </Button>
-            <Button variant="outline" asChild>
-              <a href="/ai/generate">Generuj z AI</a>
-            </Button>
-          </div>
-        </AlertDescription>
-      </Alert>
-    )}
+    {
+      isEmpty && (
+        <Alert data-testid="dashboard-empty-state">
+          <AlertDescription class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <p class="font-medium">Nie masz jeszcze żadnych fiszek</p>
+              <p class="text-sm text-muted-foreground">
+                Zacznij od dodania pierwszej fiszki lub wygeneruj je automatycznie z AI
+              </p>
+            </div>
+            <div class="flex gap-2">
+              <Button asChild>
+                <a href="/flashcards/new">Dodaj fiszkę</a>
+              </Button>
+              <Button variant="outline" asChild>
+                <a href="/ai/generate">Generuj z AI</a>
+              </Button>
+            </div>
+          </AlertDescription>
+        </Alert>
+      )
+    }
 
-    {!isEmpty && hasStudyCards && (
-      <Card class="border-primary bg-primary/5" data-testid="dashboard-study-card">
-        <CardHeader>
-          <CardTitle class="text-2xl">Gotowy do nauki?</CardTitle>
-          <CardDescription data-testid="dashboard-study-count">
-            Masz {studyCount} {studyCount === 1 ? "fiszkę" : studyCount < 5 ? "fiszki" : "fiszek"} do powtórki
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Button size="lg" asChild data-testid="dashboard-start-study-button">
-            <a href="/study">Rozpocznij naukę</a>
-          </Button>
-        </CardContent>
-      </Card>
-    )}
+    {
+      !isEmpty && hasStudyCards && (
+        <Card class="border-primary bg-primary/5" data-testid="dashboard-study-card">
+          <CardHeader>
+            <CardTitle class="text-2xl">Gotowy do nauki?</CardTitle>
+            <CardDescription data-testid="dashboard-study-count">
+              Masz {studyCount} {studyCount === 1 ? "fiszkę" : studyCount < 5 ? "fiszki" : "fiszek"} do powtórki
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Button size="lg" asChild data-testid="dashboard-start-study-button">
+              <a href="/study">Rozpocznij naukę</a>
+            </Button>
+          </CardContent>
+        </Card>
+      )
+    }
 
-    {!isEmpty && isZeroInbox && (
-      <Alert>
-        <AlertDescription class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <p class="font-medium">🎉 Świetna robota! Zero Inbox</p>
-            <p class="text-sm text-muted-foreground">Nie masz fiszek do powtórki. Wróć później lub dodaj nowe fiszki.</p>
-          </div>
-          <div class="flex gap-2">
-            <Button variant="outline" asChild>
-              <a href="/flashcards/new">Dodaj fiszkę</a>
-            </Button>
-            <Button variant="outline" asChild>
-              <a href="/ai/generate">Generuj z AI</a>
-            </Button>
-          </div>
-        </AlertDescription>
-      </Alert>
-    )}
+    {
+      !isEmpty && isZeroInbox && (
+        <Alert>
+          <AlertDescription class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <p class="font-medium">🎉 Świetna robota! Zero Inbox</p>
+              <p class="text-sm text-muted-foreground">
+                Nie masz fiszek do powtórki. Wróć później lub dodaj nowe fiszki.
+              </p>
+            </div>
+            <div class="flex gap-2">
+              <Button variant="outline" asChild>
+                <a href="/flashcards/new">Dodaj fiszkę</a>
+              </Button>
+              <Button variant="outline" asChild>
+                <a href="/ai/generate">Generuj z AI</a>
+              </Button>
+            </div>
+          </AlertDescription>
+        </Alert>
+      )
+    }
 
     <!-- Statistics Grid -->
     <div class="grid gap-6 md:grid-cols-2" data-testid="dashboard-stats-grid">

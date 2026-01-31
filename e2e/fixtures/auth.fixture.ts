@@ -8,11 +8,11 @@ import { DashboardPage } from "../pages/DashboardPage";
  * Provides authenticated context and helper methods
  */
 
-type AuthFixtures = {
+interface AuthFixtures {
   authenticatedPage: Page;
   loginPage: LoginPage;
   dashboardPage: DashboardPage;
-};
+}
 
 /**
  * Helper to perform login and return authenticated page
@@ -46,11 +46,13 @@ async function clearAuth(page: Page): Promise<void> {
 /**
  * Extended test with authentication fixtures
  */
+/* eslint-disable react-hooks/rules-of-hooks */
 export const test = base.extend<AuthFixtures>({
   /**
    * Provides a page that is already authenticated as test user
    * Use this for tests that need to start from authenticated state
    */
+
   authenticatedPage: async ({ page }, use) => {
     await loginAsTestUser(page);
     await use(page);
@@ -61,17 +63,23 @@ export const test = base.extend<AuthFixtures>({
   /**
    * Provides LoginPage instance
    */
+
   loginPage: async ({ page }, use) => {
     const loginPage = new LoginPage(page);
     await use(loginPage);
   },
 
   /**
-   * Provides DashboardPage instance
+   * Provides DashboardPage instance with authenticated session
    */
+
   dashboardPage: async ({ page }, use) => {
+    // Login first to ensure authenticated state
+    await loginAsTestUser(page);
     const dashboardPage = new DashboardPage(page);
     await use(dashboardPage);
+    // Cleanup: clear auth after test
+    await clearAuth(page);
   },
 });
 

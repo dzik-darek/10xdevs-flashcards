@@ -60,11 +60,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
 
     // Check if user is authenticated (middleware should have set this)
     if (!locals.user) {
-      return createErrorResponse(
-        401,
-        "Authentication required. Please log in to submit reviews.",
-        "UNAUTHORIZED",
-      );
+      return createErrorResponse(401, "Authentication required. Please log in to submit reviews.", "UNAUTHORIZED");
     }
 
     const userId = locals.user.id;

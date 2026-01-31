@@ -54,7 +54,8 @@ const RATING_BUTTONS = [
     label: "Easy",
     description: "Łatwo",
     variant: "outline" as const,
-    className: "flex-1 border-green-600 text-green-600 hover:bg-green-50 dark:border-green-400 dark:text-green-400 dark:hover:bg-green-950",
+    className:
+      "flex-1 border-green-600 text-green-600 hover:bg-green-50 dark:border-green-400 dark:text-green-400 dark:hover:bg-green-950",
   },
 ] as const;
 

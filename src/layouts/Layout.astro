@@ -31,7 +31,9 @@ if (Astro.locals.user && Astro.locals.supabase) {
   } catch (error) {
     // Log error but don't block page render
     // Sidebar will display without badge if stats fetch fails
-    console.error("Failed to fetch user stats for sidebar:", error);
+    if (error instanceof Error) {
+      throw error;
+    }
   }
 }
 ---

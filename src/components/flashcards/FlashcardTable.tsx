@@ -3,23 +3,16 @@
  * Displays flashcards in a table format with actions
  */
 
-import { MoreHorizontal, Pencil, Trash2 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { MoreHorizontal, Pencil, Trash2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
-import type { FlashcardDTO } from '@/types';
+} from "@/components/ui/dropdown-menu";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import type { FlashcardDTO } from "@/types";
 
 interface FlashcardTableProps {
   data: FlashcardDTO[];
@@ -38,12 +31,12 @@ function formatDate(dateString: string): string {
 
   // If date is in the past or today, show "Do powtórki"
   if (date <= now) {
-    return 'Do powtórki';
+    return "Do powtórki";
   }
 
   // Format as dd.MM.yyyy
-  const day = date.getDate().toString().padStart(2, '0');
-  const month = (date.getMonth() + 1).toString().padStart(2, '0');
+  const day = date.getDate().toString().padStart(2, "0");
+  const month = (date.getMonth() + 1).toString().padStart(2, "0");
   const year = date.getFullYear();
 
   return `${day}.${month}.${year}`;
@@ -52,9 +45,9 @@ function formatDate(dateString: string): string {
 /**
  * Truncates text to specified length
  */
-function truncateText(text: string, maxLength: number = 100): string {
+function truncateText(text: string, maxLength = 100): string {
   if (text.length <= maxLength) return text;
-  return text.substring(0, maxLength) + '...';
+  return text.substring(0, maxLength) + "...";
 }
 
 /**
@@ -63,7 +56,7 @@ function truncateText(text: string, maxLength: number = 100): string {
 function TableSkeleton() {
   return (
     <>
-      {[1, 2, 3, 4, 5].map(i => (
+      {[1, 2, 3, 4, 5].map((i) => (
         <TableRow key={i}>
           <TableCell>
             <div className="h-4 w-full animate-pulse rounded bg-muted" />
@@ -92,28 +85,16 @@ function EmptyState({ hasSearchQuery }: { hasSearchQuery: boolean }) {
       <TableCell colSpan={4} className="h-32 text-center">
         <div className="flex flex-col items-center justify-center gap-2 text-muted-foreground">
           <p className="text-lg">
-            {hasSearchQuery
-              ? 'Nie znaleziono fiszek pasujących do zapytania'
-              : 'Nie masz jeszcze żadnych fiszek'}
+            {hasSearchQuery ? "Nie znaleziono fiszek pasujących do zapytania" : "Nie masz jeszcze żadnych fiszek"}
           </p>
-          {!hasSearchQuery && (
-            <p className="text-sm">
-              Stwórz swoją pierwszą fiszkę, aby rozpocząć naukę
-            </p>
-          )}
+          {!hasSearchQuery && <p className="text-sm">Stwórz swoją pierwszą fiszkę, aby rozpocząć naukę</p>}
         </div>
       </TableCell>
     </TableRow>
   );
 }
 
-export function FlashcardTable({
-  data,
-  isLoading,
-  onEdit,
-  onDelete,
-  searchQuery = '',
-}: FlashcardTableProps) {
+export function FlashcardTable({ data, isLoading, onEdit, onDelete, searchQuery = "" }: FlashcardTableProps) {
   return (
     <div className="rounded-md border">
       <Table>
@@ -131,15 +112,11 @@ export function FlashcardTable({
           ) : data.length === 0 ? (
             <EmptyState hasSearchQuery={searchQuery.length > 0} />
           ) : (
-            data.map(card => (
+            data.map((card) => (
               <TableRow key={card.id}>
-                <TableCell className="font-medium">
-                  {truncateText(card.front, 100)}
-                </TableCell>
+                <TableCell className="font-medium">{truncateText(card.front, 100)}</TableCell>
                 <TableCell>{truncateText(card.back, 100)}</TableCell>
-                <TableCell className="text-sm text-muted-foreground">
-                  {formatDate(card.due)}
-                </TableCell>
+                <TableCell className="text-sm text-muted-foreground">{formatDate(card.due)}</TableCell>
                 <TableCell className="text-right">
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>

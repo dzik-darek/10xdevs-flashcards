@@ -10,11 +10,7 @@ import type { APIRoute } from "astro";
 import { z } from "zod";
 
 import { createFlashcardBatch } from "../../../lib/services/flashcard.service";
-import type {
-  ApiErrorResponse,
-  BatchCreateFlashcardsDTO,
-  BatchCreateFlashcardsResponseDTO,
-} from "../../../types";
+import type { ApiErrorResponse, BatchCreateFlashcardsDTO, BatchCreateFlashcardsResponseDTO } from "../../../types";
 import { VALIDATION_CONSTRAINTS } from "../../../types";
 
 // Disable prerendering for API routes
@@ -129,7 +125,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
         {
           status: 401,
           headers: { "Content-Type": "application/json" },
-        },
+        }
       );
     }
 
@@ -192,20 +188,19 @@ export const POST: APIRoute = async ({ request, locals }) => {
     // Step 5: Return Success Response
     // ========================================================================
 
-    return new Response(
-      JSON.stringify(result satisfies BatchCreateFlashcardsResponseDTO),
-      {
-        status: 201,
-        headers: { "Content-Type": "application/json" },
-      }
-    );
+    return new Response(JSON.stringify(result satisfies BatchCreateFlashcardsResponseDTO), {
+      status: 201,
+      headers: { "Content-Type": "application/json" },
+    });
   } catch (error) {
     // ========================================================================
     // Error Handling
     // ========================================================================
 
     // Log error for monitoring (in production: send to error tracking service)
-    console.error("Error creating flashcards batch:", error);
+    if (error instanceof Error) {
+      throw error;
+    }
 
     // Return generic error to client (don't leak implementation details)
     return new Response(

@@ -1,13 +1,13 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { createSupabaseBrowserClient } from '@/db/supabase.client';
+import { describe, it, expect, beforeEach, vi } from "vitest";
+import { createSupabaseBrowserClient } from "@/db/supabase.client";
 
 // Mock Supabase client
-vi.mock('@/db/supabase.client', () => ({
+vi.mock("@/db/supabase.client", () => ({
   createSupabaseBrowserClient: vi.fn(),
 }));
 
-describe('Flashcard Service', () => {
-  let mockSupabase: any;
+describe("Flashcard Service", () => {
+  let mockSupabase: ReturnType<typeof vi.fn>;
 
   beforeEach(() => {
     mockSupabase = {
@@ -23,10 +23,10 @@ describe('Flashcard Service', () => {
     vi.mocked(createSupabaseBrowserClient).mockReturnValue(mockSupabase);
   });
 
-  it('should fetch flashcards from database', async () => {
+  it("should fetch flashcards from database", async () => {
     const mockFlashcards = [
-      { id: '1', question: 'Test Q1', answer: 'Test A1' },
-      { id: '2', question: 'Test Q2', answer: 'Test A2' },
+      { id: "1", question: "Test Q1", answer: "Test A1" },
+      { id: "2", question: "Test Q2", answer: "Test A2" },
     ];
 
     mockSupabase.select.mockResolvedValue({
@@ -35,17 +35,15 @@ describe('Flashcard Service', () => {
     });
 
     const supabase = createSupabaseBrowserClient();
-    const { data } = await supabase
-      .from('flashcards')
-      .select('*');
+    const { data } = await supabase.from("flashcards").select("*");
 
     expect(data).toEqual(mockFlashcards);
-    expect(mockSupabase.from).toHaveBeenCalledWith('flashcards');
-    expect(mockSupabase.select).toHaveBeenCalledWith('*');
+    expect(mockSupabase.from).toHaveBeenCalledWith("flashcards");
+    expect(mockSupabase.select).toHaveBeenCalledWith("*");
   });
 
-  it('should handle database errors', async () => {
-    const mockError = { message: 'Database error' };
+  it("should handle database errors", async () => {
+    const mockError = { message: "Database error" };
 
     mockSupabase.select.mockResolvedValue({
       data: null,
@@ -53,21 +51,19 @@ describe('Flashcard Service', () => {
     });
 
     const supabase = createSupabaseBrowserClient();
-    const { error } = await supabase
-      .from('flashcards')
-      .select('*');
+    const { error } = await supabase.from("flashcards").select("*");
 
     expect(error).toEqual(mockError);
   });
 
-  it('should create a new flashcard', async () => {
+  it("should create a new flashcard", async () => {
     const newFlashcard = {
-      question: 'New Question',
-      answer: 'New Answer',
+      question: "New Question",
+      answer: "New Answer",
     };
 
     const mockCreatedFlashcard = {
-      id: '3',
+      id: "3",
       ...newFlashcard,
       created_at: new Date().toISOString(),
     };
@@ -78,14 +74,10 @@ describe('Flashcard Service', () => {
     });
 
     const supabase = createSupabaseBrowserClient();
-    const { data } = await supabase
-      .from('flashcards')
-      .insert(newFlashcard)
-      .select()
-      .single();
+    const { data } = await supabase.from("flashcards").insert(newFlashcard).select().single();
 
     expect(data).toEqual(mockCreatedFlashcard);
-    expect(mockSupabase.from).toHaveBeenCalledWith('flashcards');
+    expect(mockSupabase.from).toHaveBeenCalledWith("flashcards");
     expect(mockSupabase.insert).toHaveBeenCalledWith(newFlashcard);
   });
 });

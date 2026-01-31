@@ -255,7 +255,7 @@ function parseAndValidateAiResponse(aiResponse: string): FlashcardDraftDTO[] {
   // Validate and sanitize each draft
   const validatedDrafts: FlashcardDraftDTO[] = [];
 
-  for (const [index, draft] of data.drafts.entries()) {
+  for (const draft of data.drafts) {
     if (!draft || typeof draft !== "object") {
       // Skip invalid draft silently
       continue;

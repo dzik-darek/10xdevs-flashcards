@@ -34,10 +34,7 @@ export function StudySessionContainer() {
   useEffect(() => {
     const handleKeyPress = (event: KeyboardEvent) => {
       // Guard: Ignore if typing in input/textarea
-      if (
-        event.target instanceof HTMLInputElement ||
-        event.target instanceof HTMLTextAreaElement
-      ) {
+      if (event.target instanceof HTMLInputElement || event.target instanceof HTMLTextAreaElement) {
         return;
       }
 

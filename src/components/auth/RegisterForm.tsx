@@ -5,22 +5,8 @@ import { toast } from "sonner";
 
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 
 import { registerSchema, type RegisterFormValues } from "./schemas";
@@ -68,7 +54,11 @@ export function RegisterForm() {
 
       // Success - redirect to dashboard (user is auto-logged in)
       toast.success("Konto utworzone pomyślnie!");
-      window.location.href = "/dashboard";
+
+      if (typeof window !== "undefined") {
+        // eslint-disable-next-line react-compiler/react-compiler
+        window.location.href = "/dashboard";
+      }
     } catch (error) {
       if (error instanceof Error) {
         setServerError(error.message);
@@ -101,13 +91,7 @@ export function RegisterForm() {
                 <FormItem>
                   <FormLabel>Imię</FormLabel>
                   <FormControl>
-                    <Input
-                      type="text"
-                      placeholder="Jan"
-                      autoComplete="given-name"
-                      disabled={isSubmitting}
-                      {...field}
-                    />
+                    <Input type="text" placeholder="Jan" autoComplete="given-name" disabled={isSubmitting} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

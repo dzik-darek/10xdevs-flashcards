@@ -15,7 +15,7 @@ export const DELETE: APIRoute = async ({ request, cookies, locals }) => {
         {
           status: 401,
           headers: { "Content-Type": "application/json" },
-        },
+        }
       );
     }
 
@@ -25,9 +25,12 @@ export const DELETE: APIRoute = async ({ request, cookies, locals }) => {
     });
 
     // Delete user account using custom database function (this will cascade delete all related data due to ON DELETE CASCADE)
-    const { error } = await supabase.rpc('deleteUser' as any);
+    const { error } = await supabase.rpc("deleteUser" as never);
 
     if (error) {
+      if (error instanceof Error) {
+        throw error;
+      }
       return new Response(
         JSON.stringify({
           error: "Nie udało się usunąć konta",
@@ -35,7 +38,7 @@ export const DELETE: APIRoute = async ({ request, cookies, locals }) => {
         {
           status: 500,
           headers: { "Content-Type": "application/json" },
-        },
+        }
       );
     }
 
@@ -45,7 +48,10 @@ export const DELETE: APIRoute = async ({ request, cookies, locals }) => {
     return new Response(null, {
       status: 200,
     });
-  } catch (error) {
+  } catch (err) {
+    if (err instanceof Error) {
+      throw err;
+    }
     return new Response(
       JSON.stringify({
         error: "Wystąpił nieoczekiwany błąd",
@@ -53,7 +59,7 @@ export const DELETE: APIRoute = async ({ request, cookies, locals }) => {
       {
         status: 500,
         headers: { "Content-Type": "application/json" },
-      },
+      }
     );
   }
 };

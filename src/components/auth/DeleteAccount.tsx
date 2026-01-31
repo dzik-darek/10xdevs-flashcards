@@ -48,8 +48,7 @@ export function DeleteAccount() {
       <div className="space-y-2">
         <h3 className="text-lg font-semibold text-destructive">Strefa niebezpieczna</h3>
         <p className="text-sm text-muted-foreground">
-          Usunięcie konta jest nieodwracalne. Wszystkie Twoje fiszki, postępy w nauce i dane
-          zostaną trwale usunięte.
+          Usunięcie konta jest nieodwracalne. Wszystkie Twoje fiszki, postępy w nauce i dane zostaną trwale usunięte.
         </p>
       </div>
 
@@ -63,8 +62,8 @@ export function DeleteAccount() {
           <AlertDialogHeader>
             <AlertDialogTitle>Czy na pewno chcesz usunąć konto?</AlertDialogTitle>
             <AlertDialogDescription>
-              Ta operacja jest nieodwracalna. Wszystkie Twoje dane, w tym fiszki i postępy w
-              nauce, zostaną trwale usunięte z naszych serwerów.
+              Ta operacja jest nieodwracalna. Wszystkie Twoje dane, w tym fiszki i postępy w nauce, zostaną trwale
+              usunięte z naszych serwerów.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

@@ -3,9 +3,6 @@ import AuthLayout from "@/layouts/AuthLayout.astro";
 import { RegisterForm } from "@/components/auth/RegisterForm";
 ---
 
-<AuthLayout
-  title="Rejestracja - 10xdevs Flashcards"
-  description="Utwórz nowe konto i zacznij naukę z fiszkami"
->
+<AuthLayout title="Rejestracja - 10xdevs Flashcards" description="Utwórz nowe konto i zacznij naukę z fiszkami">
   <RegisterForm client:load />
 </AuthLayout>

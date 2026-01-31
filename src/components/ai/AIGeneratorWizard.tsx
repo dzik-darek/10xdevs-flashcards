@@ -3,32 +3,24 @@
  * Manages wizard steps: input -> loading -> review
  */
 
-import { useState, useRef } from 'react';
-import { useGeneratorState } from '@/hooks/useGeneratorState';
-import { InputStep } from './InputStep';
-import { LoadingStep } from './LoadingStep';
-import { ReviewStep } from './ReviewStep';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { VALIDATION_CONSTRAINTS } from '@/types';
+import { useRef } from "react";
+import { useGeneratorState } from "@/hooks/useGeneratorState";
+import { InputStep } from "./InputStep";
+import { LoadingStep } from "./LoadingStep";
+import { ReviewStep } from "./ReviewStep";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { VALIDATION_CONSTRAINTS } from "@/types";
 
 export function AIGeneratorWizard() {
-  const {
-    state,
-    setNoteContent,
-    generateDrafts,
-    updateDraft,
-    removeDraft,
-    saveBatch,
-    reset,
-  } = useGeneratorState();
+  const { state, setNoteContent, generateDrafts, updateDraft, removeDraft, saveBatch, reset } = useGeneratorState();
 
   const { step, noteContent, drafts, isSaving, error } = state;
-  
+
   // Track when generation starts (for LoadingStep timer)
   const loadingStartTimeRef = useRef<number>(Date.now());
-  
+
   // Validation for input step
-  const isContentValid = 
+  const isContentValid =
     noteContent.length >= VALIDATION_CONSTRAINTS.ai.noteContent.min &&
     noteContent.length <= VALIDATION_CONSTRAINTS.ai.noteContent.max;
 
@@ -41,19 +33,21 @@ export function AIGeneratorWizard() {
     try {
       await saveBatch();
       // Redirect to home or flashcards list after successful save
-      if (typeof window !== 'undefined') {
-        window.location.href = '/';
+      if (typeof window !== "undefined") {
+        window.location.href = "/";
       }
     } catch (err) {
       // Error is handled in the hook
-      console.error('Failed to save batch:', err);
+      if (err instanceof Error) {
+        throw err;
+      }
     }
   };
 
   return (
     <div className="min-h-screen bg-background">
       {/* Global error alert */}
-      {error && step !== 'review' && (
+      {error && step !== "review" && (
         <div className="w-full max-w-4xl mx-auto p-6 pt-8">
           <Alert variant="destructive">
             <AlertDescription>{error}</AlertDescription>
@@ -62,7 +56,7 @@ export function AIGeneratorWizard() {
       )}
 
       {/* Conditional step rendering */}
-      {step === 'input' && (
+      {step === "input" && (
         <InputStep
           content={noteContent}
           onContentChange={setNoteContent}
@@ -71,14 +65,9 @@ export function AIGeneratorWizard() {
         />
       )}
 
-      {step === 'loading' && (
-        <LoadingStep
-          startTime={loadingStartTimeRef.current}
-          onCancel={reset}
-        />
-      )}
+      {step === "loading" && <LoadingStep startTime={Date.now()} onCancel={reset} />}
 
-      {step === 'review' && (
+      {step === "review" && (
         <ReviewStep
           drafts={drafts}
           onSave={handleSave}

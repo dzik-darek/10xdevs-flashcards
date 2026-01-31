@@ -115,7 +115,7 @@ export const GET: APIRoute = async ({ url, locals }) => {
         {
           status: 401,
           headers: { "Content-Type": "application/json" },
-        },
+        }
       );
     }
 
@@ -174,7 +174,9 @@ export const GET: APIRoute = async ({ url, locals }) => {
     // ========================================================================
 
     // Log error for monitoring (in production: send to error tracking service)
-    console.error("Error fetching flashcards:", error);
+    if (error instanceof Error) {
+      throw error;
+    }
 
     // Return generic error to client (don't leak implementation details)
     return new Response(
@@ -246,7 +248,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
         {
           status: 401,
           headers: { "Content-Type": "application/json" },
-        },
+        }
       );
     }
 
@@ -324,7 +326,9 @@ export const POST: APIRoute = async ({ request, locals }) => {
     // ========================================================================
 
     // Log error for monitoring (in production: send to error tracking service)
-    console.error("Error creating flashcard:", error);
+    if (error instanceof Error) {
+      throw error;
+    }
 
     // Return generic error to client (don't leak implementation details)
     return new Response(

@@ -21,14 +21,17 @@ export const POST: APIRoute = async ({ request, cookies }) => {
         {
           status: 400,
           headers: { "Content-Type": "application/json" },
-        },
+        }
       );
     }
 
     return new Response(null, {
       status: 200,
     });
-  } catch (error) {
+  } catch (err) {
+    if (err instanceof Error) {
+      throw err;
+    }
     return new Response(
       JSON.stringify({
         error: "Wystąpił nieoczekiwany błąd",
@@ -36,7 +39,7 @@ export const POST: APIRoute = async ({ request, cookies }) => {
       {
         status: 500,
         headers: { "Content-Type": "application/json" },
-      },
+      }
     );
   }
 };

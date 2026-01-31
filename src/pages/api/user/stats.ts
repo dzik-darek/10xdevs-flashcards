@@ -62,7 +62,9 @@ export const GET: APIRoute = async ({ locals }) => {
     // Step 4: Error Handling
     // ========================================================================
 
-    console.error("Error fetching user stats:", error);
+    if (error instanceof Error) {
+      throw error;
+    }
 
     const errorResponse: ApiErrorResponse = {
       error: error instanceof Error ? error.message : "Failed to fetch statistics",

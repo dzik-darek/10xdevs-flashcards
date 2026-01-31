@@ -3,9 +3,9 @@
  * Input field with search icon and debounce functionality
  */
 
-import { Search } from 'lucide-react';
-import { Input } from '@/components/ui/input';
-import { useEffect, useState } from 'react';
+import { Search } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { useEffect, useState } from "react";
 
 interface SearchBarProps {
   onSearch: (query: string) => void;
@@ -16,8 +16,8 @@ interface SearchBarProps {
 
 export function SearchBar({
   onSearch,
-  placeholder = 'Szukaj fiszek...',
-  defaultValue = '',
+  placeholder = "Szukaj fiszek...",
+  defaultValue = "",
   debounceMs = 400,
 }: SearchBarProps) {
   const [value, setValue] = useState(defaultValue);
@@ -38,7 +38,7 @@ export function SearchBar({
         type="text"
         placeholder={placeholder}
         value={value}
-        onChange={e => setValue(e.target.value)}
+        onChange={(e) => setValue(e.target.value)}
         className="pl-10"
       />
     </div>
