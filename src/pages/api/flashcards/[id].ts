@@ -158,7 +158,7 @@ export const PATCH: APIRoute = async ({ params, request, locals }) => {
     // Guard: Check validation errors
     if (!validationResult.success) {
       const details: Record<string, string[]> = {};
-      validationResult.error.errors.forEach((err) => {
+      validationResult.error.issues.forEach((err) => {
         const path = err.path.join(".") || "general";
         if (!details[path]) {
           details[path] = [];
