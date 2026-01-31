@@ -71,7 +71,7 @@ export function LoginForm() {
   };
 
   return (
-    <Card className="mx-auto w-full max-w-md">
+    <Card className="mx-auto w-full max-w-md" data-testid="login-form-card">
       <CardHeader>
         <CardTitle className="text-2xl">Logowanie</CardTitle>
         <CardDescription>
@@ -80,10 +80,10 @@ export function LoginForm() {
       </CardHeader>
 
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)}>
+        <form onSubmit={form.handleSubmit(onSubmit)} data-testid="login-form">
           <CardContent className="space-y-4">
             {serverError && (
-              <Alert variant="destructive">
+              <Alert variant="destructive" data-testid="login-error-alert">
                 <AlertDescription>{serverError}</AlertDescription>
               </Alert>
             )}
@@ -100,6 +100,7 @@ export function LoginForm() {
                       placeholder="twoj@email.pl"
                       autoComplete="email"
                       disabled={isSubmitting}
+                      data-testid="login-email-input"
                       {...field}
                     />
                   </FormControl>
@@ -120,6 +121,7 @@ export function LoginForm() {
                       placeholder="••••••••"
                       autoComplete="current-password"
                       disabled={isSubmitting}
+                      data-testid="login-password-input"
                       {...field}
                     />
                   </FormControl>
@@ -130,13 +132,22 @@ export function LoginForm() {
           </CardContent>
 
           <CardFooter className="flex flex-col gap-4">
-            <Button type="submit" className="w-full" disabled={isSubmitting}>
+            <Button 
+              type="submit" 
+              className="w-full" 
+              disabled={isSubmitting}
+              data-testid="login-submit-button"
+            >
               {isSubmitting ? "Logowanie..." : "Zaloguj się"}
             </Button>
 
             <div className="text-center text-sm text-muted-foreground">
               Nie masz konta?{" "}
-              <a href="/register" className="text-primary underline-offset-4 hover:underline">
+              <a 
+                href="/register" 
+                className="text-primary underline-offset-4 hover:underline"
+                data-testid="register-link"
+              >
                 Zarejestruj się
               </a>
             </div>
